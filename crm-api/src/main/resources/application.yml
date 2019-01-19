@@ -1,0 +1,52 @@
+
+
+#server:  
+#  port: ${PORT:0}
+
+server:  
+  port: 811
+  
+spring:
+  application:
+    name: crm
+  datasource:
+    url:      jdbc:mysql://${mysql.service.host}:${mysql.service.port}/${mysql.service.database}
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.jdbc.Driver
+                       
+  jpa:
+    hibernate:
+      ddl-auto: update
+    generate-ddl: true
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+  main:
+    allow-bean-definition-overriding: true
+  
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+      
+mysql:
+  service:
+    port: 3306
+    host:     localhost
+    database: crm
+
+    
+ftp:
+  host: localhost
+  port: 5555
+  user: crm
+  password: 1234
+  

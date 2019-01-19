@@ -1,0 +1,6 @@
+.metadata/*
+.recommenders/*
+Servers/*
+RemoteSystemsTempFiles/*
+*.class
+*.jar
