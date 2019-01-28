@@ -2,6 +2,7 @@ package io.reactiveprogramming.crm.entity;
 
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -30,11 +31,10 @@ public class SaleOrder {
 	@Column(name="REF_NUMBER")
 	private String refNumber;
 	
-	
-	@OneToMany(mappedBy="saleOrder")
+	@OneToMany(mappedBy="saleOrder", cascade=CascadeType.ALL)
 	private Set<OrderLine> orderLines;
-
-
+	
+	
 	public Long getId() {
 		return id;
 	}

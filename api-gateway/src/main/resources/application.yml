@@ -1,9 +1,12 @@
 server:
   port: 8080
-  
+#  servlet:
+#    contextPath: /api
+
 spring:
   application:
-    name: API Gateway
+    name: gateway
+
 
 eureka:
   instance:
@@ -21,5 +24,11 @@ zuul:
     crm:
        path: /crm/**
        serviceId: crm
+       
+    security:
+       path: /security/**
+       serviceId: security
+       
+  sensitiveHeaders: Cookie,Set-Cookie
   host:
     socket-timeout-millis: 30000

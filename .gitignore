@@ -4,3 +4,7 @@ Servers/*
 RemoteSystemsTempFiles/*
 *.class
 *.jar
+/.metadata/
+/.recommenders/
+service-registry-1/*
+spring-react-oauth2-jwt-master/*

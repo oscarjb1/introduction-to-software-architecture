@@ -1,0 +1,44 @@
+server:
+  port: ${port:9090}
+  
+spring:
+  application:
+    name: security
+    
+  mvc:
+    view:
+      prefix: /WEB-INF/vistas/
+      suffix: .jsp
+      
+  datasource:
+    url:      jdbc:mysql://${mysql.service.host}:${mysql.service.port}/${mysql.service.database}
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    generate-ddl: true
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    
+    
+mysql:
+  service:
+    port: 3306
+    host:     localhost
+    database: security
+
+
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+      
+
+

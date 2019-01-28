@@ -22,7 +22,7 @@ import io.reactiveprogramming.crm.rabbit.RabbitSender;
 @Configuration
 @IntegrationComponentScan
 @EnableIntegration
-@ComponentScan(basePackages = "io.reactiveprogramming.crm.ftp")
+@ComponentScan
 public class CrmApiApplication {
 
 	public static void main(String[] args) {

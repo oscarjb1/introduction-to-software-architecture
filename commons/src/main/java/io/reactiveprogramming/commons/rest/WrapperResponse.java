@@ -1,12 +1,12 @@
-package io.reactiveprogramming.crm.api.rest.util;
+package io.reactiveprogramming.commons.rest;
 
 import java.io.Serializable;
 
-public class WrapperResponse implements Serializable{
+public class WrapperResponse<T> implements Serializable{
 	
 	private boolean ok;
 	private String message;
-	private Object body;
+	private T body;
 	
 	
 	public WrapperResponse() {
@@ -22,7 +22,7 @@ public class WrapperResponse implements Serializable{
 		this.message = message;
 	}
 	
-	public WrapperResponse(boolean ok, String message, Object body) {
+	public WrapperResponse(boolean ok, String message, T body) {
 		this.ok = ok;
 		this.message = message;
 		this.body = body;
@@ -40,10 +40,10 @@ public class WrapperResponse implements Serializable{
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	public Object getBody() {
+	public T getBody() {
 		return body;
 	}
-	public void setBody(Object body) {
+	public void setBody(T body) {
 		this.body = body;
 	}
 	
