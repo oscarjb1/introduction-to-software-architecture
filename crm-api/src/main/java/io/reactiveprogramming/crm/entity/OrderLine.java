@@ -25,6 +25,8 @@ public class OrderLine {
 	@ManyToOne(optional=false)
 	@JoinColumn(name="FK_SALE_ORDER", nullable=false, updatable=false)
 	private SaleOrder saleOrder;
+	
+	
 
 	public Long getId() {
 		return id;

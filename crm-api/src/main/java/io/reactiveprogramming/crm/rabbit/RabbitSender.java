@@ -27,5 +27,10 @@ public class RabbitSender {
         template.convertAndSend("emails", "*", dto);
         System.out.println(" [x] Sent ==>");
     } 
+    
+    public void send(String exchange, String routingKey, Object payload) {
+        template.convertAndSend(exchange, routingKey, payload);
+        System.out.println(" [x] Sent ==>");
+    } 
 
 }

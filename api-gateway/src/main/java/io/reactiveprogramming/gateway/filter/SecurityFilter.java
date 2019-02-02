@@ -59,9 +59,12 @@ public class SecurityFilter extends ZuulFilter {
 				ctx.setResponseBody("{\"ok\": false,\"message\": \""+result.getMessage()+"\"}");
 	            ctx.getResponse().setContentType("application/json");
 	            ctx.setResponseStatusCode(401);
+			}else {
+				System.out.println("Token validate => " + ReflectionToStringBuilder.toString(result, ToStringStyle.MULTI_LINE_STYLE));
+				System.out.println(result.getBody().getEmail());
+				
 			}
-			System.out.println("Token validate => " + ReflectionToStringBuilder.toString(result, ToStringStyle.MULTI_LINE_STYLE));
-			System.out.println(result.getBody().getEmail());
+			
 		}
 		return null;
 	}

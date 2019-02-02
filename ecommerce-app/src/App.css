@@ -1,32 +1,36 @@
-.App {
-  text-align: center;
+.navbar-brand-icon {
+  max-width: 30px ;
+  display: inline-block;
+  position: relative;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
+main{
+  padding-top: 30px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.controls{
+  text-align: right;
+  margin-bottom: 15px;  
 }
 
-.App-link {
-  color: #61dafb;
+.product-card{
+  padding: 0px;
+  border: 1px solid #dadada;
+  margin: 10px 0px;
+  position: relative;
+
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.product-card .controls{
+  text-align: right;
+  padding: 0px;
+  margin: 10px;
+}
+
+
+.goToCard{
+  display: inline-block;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
 }

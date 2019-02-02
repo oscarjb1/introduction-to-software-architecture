@@ -1,5 +1,6 @@
 package io.reactiveprogramming.crm.entity;
 
+import java.util.Calendar;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -10,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GeneratorType;
 
@@ -31,9 +34,15 @@ public class SaleOrder {
 	@Column(name="REF_NUMBER")
 	private String refNumber;
 	
+	@Column(name="TOTAL", nullable= false)
+	private Float total;
+	
 	@OneToMany(mappedBy="saleOrder", cascade=CascadeType.ALL)
 	private Set<OrderLine> orderLines;
 	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="REGIST_DATE", nullable=false, updatable=false)
+	private Calendar registDate;
 	
 	public Long getId() {
 		return id;
@@ -82,6 +91,38 @@ public class SaleOrder {
 
 	public void setOrderLines(Set<OrderLine> orderLines) {
 		this.orderLines = orderLines;
+		updateTotal();
+		
+	}
+	
+	
+	public Float getTotal() {
+		return total;
+	}
+
+
+	public void setTotal(Float total) {
+		this.total = total;
+	}
+
+
+	public Calendar getRegistDate() {
+		return registDate;
+	}
+
+
+	public void setRegistDate(Calendar registDate) {
+		this.registDate = registDate;
+	}
+
+
+	private void updateTotal() {
+		if(this.orderLines != null) {
+			double total = 0;
+			for(OrderLine line : this.orderLines) {
+				total = line.getProduct().getPrice() * line.getQuantity();
+			}
+		}
 	}
 	
 }
