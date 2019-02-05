@@ -2,6 +2,7 @@ import React from 'react'
 import APIInvoker from './utils/APIInvoker';
 import ProductCard from './ProductCard'
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom'
 
 class ProductList extends React.Component{
 
@@ -30,11 +31,15 @@ class ProductList extends React.Component{
 
     render(){
         return(
-            <div>
-                {this.state.products.map(item => <ProductCard key={item.id} product = {item} />)}
-                {this.props.card.length == 0
+            <div>   
+                <div className="row">
+                    {this.state.products.map(item => <div className="col-sm-6" key={item.id}><ProductCard  product = {item}/></div>)}
+                </div>
+                
+
+                {this.props.card.length === 0
                     ? <button className="goToCard btn btn-warning disabled">Empty card</button>
-                    : <button onClick={() => this.goToCard()} className="goToCard btn btn-warning">Finish buy ({this.props.card.length} products)</button>
+                    : <Link to={"/my-card"} className="goToCard btn btn-warning">Finish buy ({this.props.card.length} products)</Link>
                 }
             </div>
         )

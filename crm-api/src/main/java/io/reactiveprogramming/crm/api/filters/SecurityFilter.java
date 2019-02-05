@@ -19,8 +19,8 @@ import org.springframework.stereotype.Component;
 
 import io.reactiveprogramming.crm.api.services.SecurityService;
 
-@Component
-@Order(Ordered.HIGHEST_PRECEDENCE)
+//@Component
+//@Order(Ordered.HIGHEST_PRECEDENCE)
 public class SecurityFilter implements Filter {
 	
 	@Autowired
@@ -28,6 +28,7 @@ public class SecurityFilter implements Filter {
 
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
+		
 		HttpServletResponse response = (HttpServletResponse) res;
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletRequest httpRequest = (HttpServletRequest) request;

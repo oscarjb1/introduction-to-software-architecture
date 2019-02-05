@@ -1,40 +1,73 @@
-import React from 'react'
-import {connect} from 'react-redux'
-import { ADD_TO_CARD } from './reducers/const';
-import APIInvoker from './utils/APIInvoker';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Typography from '@material-ui/core/Typography';
 import {addToCard, removeToCard} from './reducers/actions'
+import {connect} from 'react-redux'
+import { Choose, Otherwise, When} from 'react-control-statements'
 
-class ProductCard extends React.Component{
+const styles = theme => ({
+  card: {
+    display: 'flex',
+    margin: '20px'
+  },
+  details: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  content: {
+    flex: '1 0 auto',
+  },
+  cover: {
+    width: 200,
+  },
+  controls: {
+    display: 'flex',
+    alignItems: 'center',
+    paddingLeft: theme.spacing.unit,
+    paddingBottom: theme.spacing.unit,
+  },
+  playIcon: {
+    height: 38,
+    width: 38,
+  },
+});
 
-    constructor(args){
-        super(args)
-    }
+function MediaControlCard(props) {
+  const { classes, product, card, removeToCard, addToCard } = props;
 
-    addToCard(product){
-        this.props.addToCard(product)
-    }
-
-    removeToCard(product){
-        this.props.removeToCard(product)
-    }
-
-    render(){
-        return(
-            <div className="product-card">
-                <h1>{this.props.product.name}</h1>
-                <h2>${this.props.product.price}</h2>
-                <div className="controls">
-                    {
-                        this.props.card.map(addItem => addItem.id).indexOf(this.props.product.id) !== -1
-                        ? <button onClick={() => this.removeToCard(this.props.product)} className="btn btn-danger">Remove from the card</button>
-                        : <button onClick={() => this.addToCard(this.props.product)} className="btn btn-success">Add to card</button>
-                    }
-                    
-                </div>
+  return (
+    <Card className={classes.card}>
+        <CardMedia
+        className={classes.cover}
+        image="http://localhost:8080/api/crm/products/thumbnail/1"
+        title="Live from space album cover"  />
+        <div className={classes.details}>
+            <CardContent className={classes.content}>
+            <Typography component="h5" variant="h5">
+                {product.name}
+            </Typography>
+            <Typography variant="subtitle1" color="textSecondary">
+                <span className="text text-success">${product.price}</span>
+            </Typography>
+            </CardContent>
+            
+            <div className={classes.controls}>
+                <Choose>
+                    <When condition={ card.map(addItem => addItem.id).indexOf(product.id) !== -1}>
+                        <button onClick={() => removeToCard(product)} className="btn btn-danger">Remove from the card</button>
+                    </When>
+                    <Otherwise> 
+                        <button onClick={() => addToCard(product)} className="btn btn-success">Add to card</button>
+                    </Otherwise>
+                </Choose>
             </div>
-        )
-    }
-
+        </div>
+    </Card>
+  );
 }
 
 const mapStateToProps = (state) => {
@@ -43,6 +76,10 @@ const mapStateToProps = (state) => {
     }
 }
 
+MediaControlCard.propTypes = {
+  classes: PropTypes.object.isRequired,
+  theme: PropTypes.object.isRequired,
+  product: PropTypes.object.isRequired,
+};
 
-
-export default connect(mapStateToProps, {addToCard, removeToCard})(ProductCard)
+export default withStyles(styles, { withTheme: true })(connect(mapStateToProps, {addToCard, removeToCard})(MediaControlCard));

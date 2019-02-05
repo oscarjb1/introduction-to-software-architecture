@@ -32,11 +32,12 @@ public class SecurityFilter extends ZuulFilter {
 		HttpServletRequest request = ctx.getRequest();
 		
 		String path = request.getRequestURI();
-		System.out.println("zuul getRequestURI ==> " + request.getRequestURI());
-		if("/api/security/login".equals(request.getRequestURI()) 
-				|| "/api/security/login".equals(request.getRequestURI())
-				|| "/api/security/sso".equals(request.getRequestURI())
-				|| "/api/security/loginForm".equals(request.getRequestURI())
+		System.out.println("zuul getRequestURI ==> " + path);
+		if("/api/security/login".equals(path) 
+				|| "/api/security/login".equals(path)
+				|| "/api/security/sso".equals(path)
+				|| "/api/security/loginForm".equals(path)
+				|| path.startsWith("/api/crm/products/thumbnail")
 				) {
 			
 		}else {

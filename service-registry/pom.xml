@@ -19,7 +19,7 @@
 		<spring-cloud.version>Greenwich.RC2</spring-cloud.version>
 	</properties>
 
-	<dependencies>
+	<dependencies> 
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>

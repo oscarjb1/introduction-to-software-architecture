@@ -1,3 +1,13 @@
+*{
+  position: relative;
+  font-family: 'Comfortaa', cursive;
+
+}
+
+body{
+  background-color: #eee;
+}
+
 .navbar-brand-icon {
   max-width: 30px ;
   display: inline-block;
@@ -18,6 +28,7 @@ main{
   border: 1px solid #dadada;
   margin: 10px 0px;
   position: relative;
+  height: 150px;
 
 }
 
@@ -25,6 +36,30 @@ main{
   text-align: right;
   padding: 0px;
   margin: 10px;
+}
+
+.product-card .image{
+  position: relative;
+  display: inline-block;
+  background-color: red;
+  left: 0px;
+  right: 100px;
+  top: 0px;
+  bottom: 0px;
+  
+}
+
+.product-card .image img{
+  width: 100px;
+  height: 100px;
+  display: none;
+}
+
+.product-card .desc{
+  background-color: blue;
+  width: 100%;
+  display: inline-block;
+  margin-left: 110px;
 }
 
 
