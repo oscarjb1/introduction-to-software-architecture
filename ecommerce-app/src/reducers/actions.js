@@ -1,4 +1,4 @@
-import { ADD_TO_CARD, REMOVE_TO_CARD, SET_USER } from "./const";
+import { ADD_TO_CARD, REMOVE_TO_CARD, SET_USER, CLEAR_CARD } from "./const";
 
 
 export const addToCard = (product) => (dispatch, getState) => {
@@ -21,3 +21,11 @@ export const setUser = (user) => (dispatch, getState) => {
         user: user
     })    
 }
+
+
+export const clearCard = () => (dispatch, getState) => {
+    dispatch({
+        type: CLEAR_CARD
+    })    
+}
+

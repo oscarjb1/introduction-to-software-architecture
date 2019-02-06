@@ -10,6 +10,7 @@ import { Choose, When, Otherwise } from 'react-control-statements'
 import MyCard from './MyCard'
 import {connect} from 'react-redux'
 import {setUser} from './reducers/actions'
+import Orders from './Orders';
 
 class Themplete extends React.Component{
 
@@ -63,7 +64,7 @@ class Themplete extends React.Component{
 
 
                             <div>
-                                <Link to={"/"} className="btn btn-sm btn-outline text text-white" style={{marginRight: '10px'}}>My orders</Link>
+                                <Link to={"/orders"} className="btn btn-sm btn-outline text text-white" style={{marginRight: '10px'}}>My orders</Link>
                                 <button onClick={() => this.logout()} className="btn btn-sm btn-outline-secondary" type="button">Logout</button>
                             </div>
                             
@@ -76,8 +77,8 @@ class Themplete extends React.Component{
                                         <React.Fragment>
                                             <Route exact path="/" component={ProductList}/>
                                             <Route exact path="/my-card" component={MyCard}/>
-                                            <Route exact path="/orders/:orderID" component={OrderForm}/>
-
+                                            <Route exact path="/order/:orderID" component={OrderForm}/>
+                                            <Route exact path="/orders" component={Orders}/>
                                         </React.Fragment>
                                     </When>
                                     <Otherwise>
@@ -94,8 +95,6 @@ class Themplete extends React.Component{
                 </Choose>
                 
             </div>
-            
-            
         )
     }
 }

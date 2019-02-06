@@ -6,10 +6,14 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -44,6 +48,33 @@ public class SaleOrder {
 	@Column(name="REGIST_DATE", nullable=false, updatable=false)
 	private Calendar registDate;
 	
+	@Enumerated(EnumType.STRING)
+	@Column(name="STATUS", nullable=false, length=10)
+	private OrderStatus status;
+	
+	@OneToOne(mappedBy="saleOrder", cascade=CascadeType.ALL)
+	private Payment payment;
+	
+	public OrderStatus getStatus() {
+		return status;
+	}
+
+
+	public void setStatus(OrderStatus status) {
+		this.status = status;
+	}
+
+
+	public Payment getPayment() {
+		return payment;
+	}
+
+
+	public void setPayment(Payment payment) {
+		this.payment = payment;
+	}
+
+
 	public Long getId() {
 		return id;
 	}
@@ -118,11 +149,13 @@ public class SaleOrder {
 
 	private void updateTotal() {
 		if(this.orderLines != null) {
-			double total = 0;
+			float total = 0;
 			for(OrderLine line : this.orderLines) {
 				total = line.getProduct().getPrice() * line.getQuantity();
 			}
+			this.total = total;
 		}
+		
 	}
 	
 }

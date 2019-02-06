@@ -1,34 +1,20 @@
 package io.reactiveprogramming.crm.dto;
 
-import java.util.Calendar;
 import java.util.Set;
 
-import io.reactiveprogramming.crm.entity.OrderStatus;
+import io.reactiveprogramming.crm.entity.PaymentMethod;
 
-public class SaleOrderDTO {
-	
+public class NewOrderDTO {
 	private Long id;
 	private String customerName;
 	private String customerEmail;
 	private String refNumber;
-	private Set<OrderLineDTO> orderLines;
-	private Float total;
-	private String registDate;
-	private String status;
-	private PaymentDTO payment;
+	private Set<NewOrderLineDTO> orderLines;
+	private String paymentMethod;
+	private float total;
+	private CardDTO card;
 	
-	public PaymentDTO getPayment() {
-		return payment;
-	}
-	public void setPayment(PaymentDTO payment) {
-		this.payment = payment;
-	}
-	public String getStatus() {
-		return status;
-	}
-	public void setStatus(String status) {
-		this.status = status;
-	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -53,23 +39,28 @@ public class SaleOrderDTO {
 	public void setRefNumber(String refNumber) {
 		this.refNumber = refNumber;
 	}
-	public Set<OrderLineDTO> getOrderLines() {
+	public Set<NewOrderLineDTO> getOrderLines() {
 		return orderLines;
 	}
-	public void setOrderLines(Set<OrderLineDTO> orderLines) {
+	public void setOrderLines(Set<NewOrderLineDTO> orderLines) {
 		this.orderLines = orderLines;
 	}
-	public Float getTotal() {
+	public String getPaymentMethod() {
+		return paymentMethod;
+	}
+	public void setPaymentMethod(String paymentMethod) {
+		this.paymentMethod = paymentMethod;
+	}
+	public float getTotal() {
 		return total;
 	}
-	public void setTotal(Float total) {
+	public void setTotal(float total) {
 		this.total = total;
 	}
-	public String getRegistDate() {
-		return registDate;
+	public CardDTO getCard() {
+		return card;
 	}
-	public void setRegistDate(String registDate) {
-		this.registDate = registDate;
+	public void setCard(CardDTO card) {
+		this.card = card;
 	}
-	
 }

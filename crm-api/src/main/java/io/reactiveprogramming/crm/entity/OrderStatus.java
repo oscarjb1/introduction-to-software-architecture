@@ -1,6 +1,6 @@
 package io.reactiveprogramming.crm.entity;
 
-public enum Status {
+public enum OrderStatus {
 	PAYED,
 	PENDING
 }

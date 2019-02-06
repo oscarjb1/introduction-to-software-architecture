@@ -30,9 +30,9 @@ export default class Orders extends React.Component{
     render(){
         return(
             <div>
-                <div className="controls">
-                    <Link className="btn btn-sm btn-dark" to={"/orders/new"} >Nuevo</Link>
-                </div>
+                <br/>
+                <h3>Todas tus órdenes</h3>
+                <br/>
                 <ReactTable
                     data={this.state.orders}
                     columns={[

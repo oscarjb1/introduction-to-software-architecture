@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -24,7 +25,7 @@ public class Payment {
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	private Long id;
 	
-	@ManyToOne(optional=false)
+	@OneToOne
 	@JoinColumn(name="FK_SALEORDER", nullable=false)
 	private SaleOrder saleOrder;
 	
@@ -35,7 +36,7 @@ public class Payment {
 	@Enumerated(EnumType.STRING)
 	@Column(name="PAYMENT_METHOD", nullable=false, length=20)
 	private PaymentMethod paymentMethod;
-
+	
 	public Long getId() {
 		return id;
 	}
