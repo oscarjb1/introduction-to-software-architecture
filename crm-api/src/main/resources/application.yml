@@ -1,35 +1,39 @@
-
-
-#server:  
-#  port: ${PORT:0}
-
 server:  
   port: 811
   
 spring:
   application:
     name: crm
+  sleuth:
+    sampler:
+      probability: 1.0
+  zipkin:
+    base-url: http://localhost:9411/
+    
   datasource:
     url:      jdbc:mysql://${mysql.service.host}:${mysql.service.port}/${mysql.service.database}
     username: root
     password: 1234
     driver-class-name: com.mysql.jdbc.Driver
+    #initialization-mode: always
+  
                        
   jpa:
     hibernate:
       ddl-auto: update
     generate-ddl: true
-    show-sql: true
+    show-sql: false
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
   main:
     allow-bean-definition-overriding: true
-  
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
     
+  rabbitmq:
+    host: barnacle.rmq.cloudamqp.com
+    port: 5672
+    username: nccsiuvr
+    password: FEfDUd1TNNbe3rDWDaUgF5TgqVJM62iH
+    virtual-host: nccsiuvr
+
 eureka:
   client:
     registerWithEureka: true
@@ -40,13 +44,5 @@ eureka:
 mysql:
   service:
     port: 3306
-    host:     localhost
+    host: localhost
     database: crm
-
-    
-ftp:
-  host: localhost
-  port: 5555
-  user: crm
-  password: 1234
-  

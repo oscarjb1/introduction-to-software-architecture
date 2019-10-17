@@ -32,6 +32,66 @@ export default class OrderForm extends React.Component{
             <div>
                 <Choose>
                     <When condition={this.state.load}>
+                    <h3>Datos de la compra</h3>
+                    <br/>
+                    <form>
+                        
+                        <div className="form-group row">
+                            <label for="customerName" className="col-sm-2 col-form-label">Usuario</label>
+                            <div className="col-sm-10">
+                            <input type="text" readonly className="form-control-plaintext" id="customerName" value={this.state.order.customerName}/>
+                            </div>
+                        </div>
+                        <div className="form-group row">
+                            <label for="customerEmail" className="col-sm-2 col-form-label">User Email</label>
+                            <div className="col-sm-10">
+                            <input type="text" readonly className="form-control-plaintext" id="customerEmail" value={this.state.order.customerEmail}/>
+                            </div>
+                        </div>
+
+                        <div className="form-group row">
+                            <label for="refNumber" className="col-sm-2 col-form-label">Número de orden</label>
+                            <div className="col-sm-10">
+                            <input type="text" readonly className="form-control-plaintext" id="refNumber" value={this.state.order.refNumber}/>
+                            </div>
+                        </div>
+
+                        <div className="form-group row">
+                            <label for="registDate" className="col-sm-2 col-form-label">Fecha de creación</label>
+                            <div className="col-sm-10">
+                            <input type="text" readonly className="form-control-plaintext" id="registDate" value={this.state.order.registDate}/>
+                            </div>
+                        </div>
+
+                        <div className="form-group row">
+                            <label for="status" className="col-sm-2 col-form-label">Estatus</label>
+                            <div className="col-sm-10">
+                            <input type="text" readonly className="form-control-plaintext" id="status" value={this.state.order.status}/>
+                            </div>
+                        </div>
+
+                        <If condition={this.state.order.payment} >
+                            <br/>
+                            <h3>Datos del pago</h3>
+                            <br/>
+                            <div className="form-group row">
+                                <label for="paydate" className="col-sm-2 col-form-label">Fecha de pago</label>
+                                <div className="col-sm-10">
+                                <input type="text" readonly className="form-control-plaintext" id="paydate" value={this.state.order.payment.paydate}/>
+                                </div>
+                            </div>
+
+                            <div className="form-group row">
+                                <label for="paymentMethod" className="col-sm-2 col-form-label">Método de pago</label>
+                                <div className="col-sm-10">
+                                <input type="text" readonly className="form-control-plaintext" id="paymentMethod" value={this.state.order.payment.paymentMethod === 'CREDIT_CARD'? 'Tarjeta de crédito': 'Depósito'}/>
+                                </div>
+                            </div>
+                        </If>
+                    </form>
+                        <br/>
+                        <h3>Productos adquiridos</h3>
+                        <br/>
                         <div style={{backgroundColor: 'white'}}>
                             <table className="table" >
                                 <thead className="thead-dark">
@@ -58,67 +118,10 @@ export default class OrderForm extends React.Component{
                         </div>
                     </When>
                     <Otherwise>
-                        <p>hola</p>
+                        <p>Cargando...</p>
                     </Otherwise>
                 </Choose>
-                <h3>Datos de la compra</h3>
-                <br/>
-                <form>
-                    <div className="form-group row">
-                        <label for="staticEmail" className="col-sm-2 col-form-label">Usuario</label>
-                        <div className="col-sm-10">
-                        <input type="text" readonly className="form-control-plaintext" id="staticEmail" value={this.state.order.customerName}/>
-                        </div>
-                    </div>
-                    <div className="form-group row">
-                        <label for="staticEmail" className="col-sm-2 col-form-label">User Email</label>
-                        <div className="col-sm-10">
-                        <input type="text" readonly className="form-control-plaintext" id="staticEmail" value={this.state.order.customerEmail}/>
-                        </div>
-                    </div>
-
-                    <div className="form-group row">
-                        <label for="staticEmail" className="col-sm-2 col-form-label">Número de orden</label>
-                        <div className="col-sm-10">
-                        <input type="text" readonly className="form-control-plaintext" id="staticEmail" value={this.state.order.refNumber}/>
-                        </div>
-                    </div>
-
-                    <div className="form-group row">
-                        <label for="staticEmail" className="col-sm-2 col-form-label">Fecha de creación</label>
-                        <div className="col-sm-10">
-                        <input type="text" readonly className="form-control-plaintext" id="staticEmail" value={this.state.order.registDate}/>
-                        </div>
-                    </div>
-
-                    <div className="form-group row">
-                        <label for="staticEmail" className="col-sm-2 col-form-label">Estatus</label>
-                        <div className="col-sm-10">
-                        <input type="text" readonly className="form-control-plaintext" id="staticEmail" value={this.state.order.status}/>
-                        </div>
-                    </div>
-
-                    <If condition={this.state.order.payment} >
-                        <h3>Datos del pago</h3>
-
-                        <div className="form-group row">
-                            <label for="staticEmail" className="col-sm-2 col-form-label">Fecha de pago</label>
-                            <div className="col-sm-10">
-                            <input type="text" readonly className="form-control-plaintext" id="staticEmail" value={this.state.order.payment.paydate}/>
-                            </div>
-                        </div>
-
-                        <div className="form-group row">
-                            <label for="staticEmail" className="col-sm-2 col-form-label">Método de pago</label>
-                            <div className="col-sm-10">
-                            <input type="text" readonly className="form-control-plaintext" id="staticEmail" value={this.state.order.payment.paymentMethod === 'CREDIT_CARD'? 'Tarjeta de crédito': 'Depósito'}/>
-                            </div>
-                        </div>
-
-                    </If>
-                    
-                    
-                </form>
+                
                 <br/>
             </div>
         )

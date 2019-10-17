@@ -7,15 +7,26 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import io.reactiveprogramming.commons.dto.LoginResponseDTO;
+import io.reactiveprogramming.commons.email.EmailDTO;
 import io.reactiveprogramming.commons.exceptions.GenericServiceException;
 import io.reactiveprogramming.commons.exceptions.ValidateServiceException;
+import io.reactiveprogramming.commons.rest.WrapperResponse;
 import io.reactiveprogramming.crm.api.dao.IOrderDAO;
 import io.reactiveprogramming.crm.api.dao.IProductDAO;
 import io.reactiveprogramming.crm.converters.SaleOrderConverter;
+import io.reactiveprogramming.crm.dto.ApplyPaymentRequest;
 import io.reactiveprogramming.crm.dto.CardDTO;
+import io.reactiveprogramming.crm.dto.MessageDTO;
 import io.reactiveprogramming.crm.dto.NewOrderDTO;
 import io.reactiveprogramming.crm.dto.NewOrderLineDTO;
 import io.reactiveprogramming.crm.dto.OrderLineDTO;
@@ -26,15 +37,24 @@ import io.reactiveprogramming.crm.entity.Payment;
 import io.reactiveprogramming.crm.entity.PaymentMethod;
 import io.reactiveprogramming.crm.entity.Product;
 import io.reactiveprogramming.crm.entity.SaleOrder;
+import io.reactiveprogramming.crm.rabbit.RabbitSender;
 
 @Service
 public class OrderService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
 	@Autowired
 	private IOrderDAO orderDAO;
 	
 	@Autowired
 	private IProductDAO productDAO;
+	
+	@Autowired
+	private RabbitSender sender;
+	
+	@Autowired
+	private RestTemplate restTemplate;
 	
 	public List<SaleOrderDTO> getAllOrders() throws GenericServiceException, ValidateServiceException{
 		try {
@@ -48,6 +68,7 @@ public class OrderService {
 	}
 
 	public SaleOrderDTO createOrder(NewOrderDTO order)throws ValidateServiceException, GenericServiceException {
+		logger.info("New order request ==>");
 		try {
 			
 			if(order.getOrderLines() == null || order.getOrderLines().isEmpty()) {
@@ -60,6 +81,8 @@ public class OrderService {
 			} catch (Exception e) {
 				throw new ValidateServiceException("Invalid payment menthod");
 			}
+			
+			
 			
 			SaleOrder saleOrder = new SaleOrder();
 			
@@ -99,10 +122,8 @@ public class OrderService {
 			saleOrder.setRefNumber(UUID.randomUUID().toString());
 			saleOrder.setRegistDate(Calendar.getInstance());
 			
-			
 			Set<OrderLine> lines = new HashSet<>();
 			for(NewOrderLineDTO lineDTO : order.getOrderLines()) {
-				//Valida if product exist
 				Optional<Product> productOpt = productDAO.findById(lineDTO.getProductId());
 				if(!productOpt.isPresent()) {
 					throw new ValidateServiceException(String.format("Product %s not found", lineDTO.getProductId()));
@@ -121,8 +142,38 @@ public class OrderService {
 			
 			SaleOrder newSaleOrder = orderDAO.save(saleOrder);
 			
+			logger.info("New order created ==>" + newSaleOrder.getId() + ", refNumber > " + newSaleOrder.getRefNumber());
+			
 			SaleOrderConverter orderConverter = new SaleOrderConverter();
-			return orderConverter.toDTO(newSaleOrder);
+			SaleOrderDTO returnOrder = orderConverter.toDTO(newSaleOrder);
+			
+			EmailDTO mail = new EmailDTO();
+			mail.setFrom("no-reply@crm.com");
+			mail.setSubject("Hemos recibido tu pedido");
+			mail.setTo(newSaleOrder.getCustomerEmail());
+			if(paymentMethod==PaymentMethod.CREDIT_CARD) {
+				mail.setMessage(String.format("Hola %s,<br> Hemos recibido tu pedido <strong>#%s</strong>, tambien hemos confirmado tu pago, por lo que estarás recibiendo tus productos muy pronto",newSaleOrder.getCustomerName(), newSaleOrder.getRefNumber()));
+			}else {
+				mail.setMessage(String.format("Hola %s,<br> Hemos recibido tu pedido <strong>#%s</strong>, debido a que has seleccionado la forma de pago por depósito bancario, esperaremos hasta tener confirmado el pago para enviar tus productos.",newSaleOrder.getCustomerName(), newSaleOrder.getRefNumber()));
+			}
+			
+			sender.send( "emails", null, mail); 
+			
+			// Send Webhook notification
+			try {
+				if(paymentMethod==PaymentMethod.CREDIT_CARD) {
+					MessageDTO message = new MessageDTO();
+					message.setEventType(MessageDTO.EventType.NEW_SALES);
+					message.setMessage(returnOrder); 
+					WrapperResponse response = restTemplate.postForObject("http://webhook/push", message, WrapperResponse.class);
+				}
+			} catch (Exception e) {
+				System.out.println("No webhook service instance up!");
+			}
+			
+				
+			
+			return returnOrder;
 		} catch(ValidateServiceException e) {
 			throw e;
 		}catch (Exception e) {
@@ -148,5 +199,43 @@ public class OrderService {
 			e.printStackTrace();
 			throw new GenericServiceException(e.getMessage(), e);
 		}
+	}
+	
+	public void applyPayment(ApplyPaymentRequest request)throws ValidateServiceException, GenericServiceException {
+		try {
+			SaleOrder saleOrder = orderDAO.findByRefNumber(request.getRefNumber());
+			if(saleOrder == null) {
+				throw new ValidateServiceException("Order by ref number not found");
+			}
+			
+			if(request.getAmmount() < saleOrder.getTotal() ) {
+				throw new ValidateServiceException("Payment amount not correspond to the total of the order");
+			}
+			
+			
+			if(saleOrder.getStatus() == OrderStatus.PAYED) {
+				throw new ValidateServiceException("The order is already paid");
+			}
+			
+			saleOrder.getPayment().setPaydate(Calendar.getInstance());
+			saleOrder.setStatus(OrderStatus.PAYED);
+			orderDAO.save(saleOrder);
+			
+			EmailDTO mail = new EmailDTO();
+			mail.setFrom("no-reply@crm.com");
+			mail.setSubject("Hemos recibido tu pedido");
+			mail.setTo(saleOrder.getCustomerEmail());
+			mail.setMessage(String.format("Hola %s,<br> Hemos recibido el pago de la orden No. <strong>#%s</strong>, en este momento estamos gestionando el envío de tu pedido para que lo recibas cuanto antes",saleOrder.getCustomerName(), saleOrder.getRefNumber()));
+			
+			sender.send(mail);
+			
+		} catch(ValidateServiceException e) {
+			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new GenericServiceException(e.getMessage(), e);
+		}
+		
+		
 	}
 }

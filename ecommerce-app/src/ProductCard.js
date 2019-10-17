@@ -23,6 +23,7 @@ const styles = theme => ({
   },
   cover: {
     width: 200,
+    height: 300
   },
   controls: {
     display: 'flex',
@@ -43,7 +44,8 @@ function MediaControlCard(props) {
     <Card className={classes.card}>
         <CardMedia
         className={classes.cover}
-        image="http://localhost:8080/api/crm/products/thumbnail/1"
+        image={`${product.image}`}
+        //image="https://m.media-amazon.com/images/M/MV5BYThjYzcyYzItNTVjNy00NDk0LTgwMWQtYjMwNmNlNWJhMzMyXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg"
         title="Live from space album cover"  />
         <div className={classes.details}>
             <CardContent className={classes.content}>

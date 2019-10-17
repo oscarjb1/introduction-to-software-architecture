@@ -6,7 +6,9 @@ server:
 spring:
   application:
     name: gateway
-
+  sleuth:
+    sampler:
+      probability: 1.0
 
 eureka:
   instance:
@@ -24,11 +26,12 @@ zuul:
     crm:
        path: /crm/**
        serviceId: crm
-       
     security:
        path: /security/**
        serviceId: security
-       
+    webhook:
+      path: /webhook/**
+      serviceId: webhook
   sensitiveHeaders: Cookie,Set-Cookie
   host:
     socket-timeout-millis: 30000

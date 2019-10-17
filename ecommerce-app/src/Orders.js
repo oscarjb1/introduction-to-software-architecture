@@ -17,7 +17,6 @@ export default class Orders extends React.Component{
 
     componentWillMount(){
         APIInvoker.invokeGET('/crm/orders', response => {
-            console.log("response =>", response)
             this.setState({
                 load: true,
                 orders: response.body
@@ -62,12 +61,17 @@ export default class Orders extends React.Component{
                             accessor: "registDate",
                             filterable: true,
                         },
-                        
+                        {
+                            Header: "Actions",
+                            accessor: "id",
+                            filterable: true,
+                            Cell: row => (<center><Link to={`/order/${row.value}`}><span style={{padding: '2px 20px'}} className="btn btn-sm btn-dark">Ver</span></Link></center>)
+                        },
                     ]}
                     defaultSorted={[
                         {
-                        id: "age",
-                        desc: true
+                            id: "age",
+                            desc: true
                         }
                     ]}
                     defaultPageSize={10}

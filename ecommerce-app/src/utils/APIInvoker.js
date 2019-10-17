@@ -1,5 +1,4 @@
 var configuration = require('../config')
-const debug = configuration.debugMode
 
 class APIInvoker {
 
@@ -68,11 +67,6 @@ class APIInvoker {
   }
 
   invoke(url, okCallback, failCallback,params){
-    if(debug){
-      console.log("Invoke => " + params.method + ":" + url );
-      console.log(params.body);
-    }
-
     let finalURL = url.toLowerCase().startsWith("http") ? url : `${configuration.api.host}${url}`
 
     fetch(finalURL, params)
@@ -80,10 +74,6 @@ class APIInvoker {
       return response.json()
     })
     .then((responseData) => {
-      if(debug){
-        console.log("Invoke Response => ", responseData);
-      }
-
       if(responseData.ok){
         okCallback(responseData)
       }else{

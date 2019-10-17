@@ -23,9 +23,8 @@ public class Product {
 	@Column(name="PRICE", nullable=false)
 	private Float price;
 	
-	@Lob
-	@Column(name="image")
-	private byte[] image;
+	@Column(name="image", length=1500)
+	private String image;
 	
 
 	public Long getId() {
@@ -52,11 +51,11 @@ public class Product {
 		this.price = price;
 	}
 
-	public byte[] getImage() {
+	public String getImage() {
 		return image;
 	}
 
-	public void setImage(byte[] image) {
+	public void setImage(String image) {
 		this.image = image;
 	}
 	

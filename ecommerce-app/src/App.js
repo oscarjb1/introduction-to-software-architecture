@@ -24,10 +24,7 @@ const App = () => {
       <Router>
         <Router>
           <Route path="/" component= {Themplete}>
-            
-            
           </Route>
-            
         </Router>
       </Router>
     </Provider>

@@ -4,7 +4,9 @@ server:
 spring:
   application:
     name: security
-    
+  sleuth:
+    sampler:
+      probability: 1.0
   mvc:
     view:
       prefix: /WEB-INF/vistas/
@@ -19,9 +21,9 @@ spring:
     hibernate:
       ddl-auto: update
     generate-ddl: true
-    show-sql: true
+    show-sql: false
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-    
+
     
 mysql:
   service:

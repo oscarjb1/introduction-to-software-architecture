@@ -1,8 +1,11 @@
 package io.reactiveprogramming.mail.rabbit;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.reactiveprogramming.commons.email.EmailDTO;
 import io.reactiveprogramming.mail.services.MailSenderService;
 
 public class RabbitReceiver {
@@ -11,9 +14,9 @@ public class RabbitReceiver {
 	private MailSenderService mailService;
 
 	@RabbitListener(queues = "emails")
-	public void receive1(String in) throws InterruptedException {
-		System.out.println("newMessage => " + in);
-		//mailService.sendSimpleMessage(message);
+	public void receive1(EmailDTO message) throws InterruptedException {
+		System.out.println("newMessage => " + ReflectionToStringBuilder.toString(message, ToStringStyle.MULTI_LINE_STYLE));
+		mailService.sendSimpleMessage(message);
 	}
 
 }

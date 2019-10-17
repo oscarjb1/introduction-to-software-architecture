@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.reactiveprogramming.commons.exceptions.ValidateServiceException;
@@ -17,7 +16,6 @@ import io.reactiveprogramming.commons.rest.WrapperResponse;
 import io.reactiveprogramming.crm.api.services.OrderService;
 import io.reactiveprogramming.crm.dto.NewOrderDTO;
 import io.reactiveprogramming.crm.dto.SaleOrderDTO;
-import io.reactiveprogramming.crm.entity.SaleOrder;
 
 @RestController
 @RequestMapping("orders")
@@ -37,7 +35,6 @@ public class OrderREST {
 			e.printStackTrace();
 			return new WrapperResponse(false, "Internal Server Error");
 		}
-		
 	}
 	
 	@PostMapping
@@ -54,7 +51,7 @@ public class OrderREST {
 	}
 	
 	@RequestMapping(value = "{orderId}", method = RequestMethod.GET)
-	public WrapperResponse createOrder(@PathVariable("orderId") Long orderId) {
+	public WrapperResponse getOrder(@PathVariable("orderId") Long orderId) {
 		try {
 			SaleOrderDTO newOrder = orderService.findSaleOrderById(orderId);
 			WrapperResponse response = new WrapperResponse(true, "success", newOrder);

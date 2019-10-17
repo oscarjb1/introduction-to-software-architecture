@@ -35,7 +35,6 @@ class Themplete extends React.Component{
         }
 
         APIInvoker.invokeGET(`/security/token/validate?token=${token}`,response => {
-            console.log(response)
             this.setState({
                 login: true
             })

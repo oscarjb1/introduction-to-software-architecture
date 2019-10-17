@@ -1,24 +1,40 @@
 server:
   port: 8081
-  
+  #ssl:
+    #trust-store: src/main/resources/trustore.jks
+    #trust-store-password: 1234
+
 spring:
   application:
     name: mail-sender
+    
+  sleuth:
+    sampler:
+      probability: 1.0
   main:
     allow-bean-definition-overriding: true
   mail:
     host: smtp.gmail.com
-    port: 587
     username: oscarblancarte3@gmail.com
     password: Admin1234@
+    port: 587
     properties:
       mail:
         smtp:
           auth: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
           starttls:
             enable: true
+          ssl: 
+            trust: smtp.gmail.com
   rabbitmq:
+    host: barnacle.rmq.cloudamqp.com
     port: 5672
+    username: nccsiuvr
+    password: FEfDUd1TNNbe3rDWDaUgF5TgqVJM62iH
+    virtual-host: nccsiuvr
     
 eureka:
   client:
@@ -26,7 +42,3 @@ eureka:
     fetchRegistry: true
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
-
-
-      
-      

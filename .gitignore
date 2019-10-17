@@ -1,10 +1,4 @@
-.metadata/*
-.recommenders/*
-Servers/*
-RemoteSystemsTempFiles/*
-*.class
-*.jar
 /.metadata/
 /.recommenders/
-service-registry-1/*
-spring-react-oauth2-jwt-master/*
+commons/target/*
+zipkin-server-2.18.0-exec.jar

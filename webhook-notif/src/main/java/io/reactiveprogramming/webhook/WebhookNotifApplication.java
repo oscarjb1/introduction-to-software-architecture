@@ -14,7 +14,5 @@ public class WebhookNotifApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(WebhookNotifApplication.class, args);
 	}
-	
-
 }
 

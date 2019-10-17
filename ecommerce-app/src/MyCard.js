@@ -7,9 +7,8 @@ import 'react-credit-cards/es/styles-compiled.css';
 import APIInvoker from './utils/APIInvoker'
 import Rodal from 'rodal';
 import 'rodal/lib/rodal.css';
-import {Link} from 'react-router-dom'
 import { clearCard } from './reducers/actions'
-import {If, Choose, When, Otherwise} from 'react-control-statements'
+import {Choose, When, Otherwise} from 'react-control-statements'
 
 class MyCard extends React.Component{
 
@@ -64,8 +63,6 @@ class MyCard extends React.Component{
             },
             orderLines: lines
           }
-
-        console.log("new order request => ", request)
 
         APIInvoker.invokePOST('/crm/orders', request, response => {
             this.setState({
@@ -180,7 +177,7 @@ class MyCard extends React.Component{
                     
                 </div>
 
-                <Rodal  width={500} onClose={() => {alert('dffd')}} showCloseButton={false} closeOnEsc={false} visible={this.state.dialogVisible} onClose={this.hideDialog.bind(this)}>
+                <Rodal  width={500} showCloseButton={false} closeOnEsc={false} visible={this.state.dialogVisible} onClose={this.hideDialog.bind(this)}>
                     
                     <p style={{fontSize: '22px', fontWeight: 'bold'}} className="text text-success">Pedido realizado con éxito</p>
 
@@ -189,12 +186,11 @@ class MyCard extends React.Component{
                             <p>Tu pedido ha sido registrado con éxito, un email llegará a tu correo con los detalles de tu compra</p>
                         </When>
                         <Otherwise>
-                            <p>Tu pedido ha sido registrado con éxito. <span className="text text-warning">Recuerda que es importate referenciar el pago con el siguiente número número de pedido.</span></p>
+                            <p>Tu pedido ha sido registrado con éxito. Recuerda que es importate referenciar el pago con el siguiente número número de pedido.</p>
                         </Otherwise>
                     </Choose>
                     <p>Pedido No: {this.state.order ? this.state.order.refNumber : ''}</p>
                     <div style={{textAlign: 'right'}}>
-                        <Link to={"/"} className="btn btn-default" style={{marginRight: '10px'}}>Seguir comprando</Link>
                         <button onClick={() => this.goToOrder()} className="btn btn-success" style={{marginRight: '10px'}}>Ver mi compra</button>
                     </div>
                     

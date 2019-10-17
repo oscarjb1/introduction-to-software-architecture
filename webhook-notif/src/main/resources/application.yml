@@ -3,17 +3,21 @@ server:
 
 spring:
   application:
-    name: webhook-notif  
+    name: webhook 
+  sleuth:
+    sampler:
+      probability: 1.0
   datasource:
     url:      jdbc:mysql://${mysql.service.host}:${mysql.service.port}/${mysql.service.database}
     username: root
     password: 1234
     driver-class-name: com.mysql.jdbc.Driver
-  jpa:
+    initialization-mode: always
+  jpa: 
     hibernate:
       ddl-auto: update
     generate-ddl: true
-    show-sql: true
+    show-sql: false
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
   main:
     allow-bean-definition-overriding: true

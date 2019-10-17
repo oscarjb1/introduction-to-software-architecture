@@ -1,0 +1,27 @@
+server:
+  port: 8082
+  
+spring:
+  application:
+    name: ftp-payment-pooling
+    
+  sleuth:
+    sampler:
+      probability: 1.0
+      
+
+  
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+  
+ftp:
+  enable: true
+  host: localhost
+  port: 21
+  user: payments
+  password: 1234

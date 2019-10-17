@@ -40,6 +40,7 @@ public class ProductService {
 		return newProduct.getId();
 	}
 	
+	/*
 	public byte[] getProductImage(Long id)throws ValidateServiceException, GenericServiceException {
 		try {
 			Optional<Product> productOpt = productDAO.findById(id);
@@ -55,4 +56,5 @@ public class ProductService {
 			throw new GenericServiceException("Internal server error");
 		}
 	}
+	*/
 }

@@ -32,7 +32,6 @@ public class SecurityFilter extends ZuulFilter {
 		HttpServletRequest request = ctx.getRequest();
 		
 		String path = request.getRequestURI();
-		System.out.println("zuul getRequestURI ==> " + path);
 		if("/api/security/login".equals(path) 
 				|| "/api/security/login".equals(path)
 				|| "/api/security/sso".equals(path)
@@ -42,7 +41,6 @@ public class SecurityFilter extends ZuulFilter {
 			
 		}else {
 			String token = request.getHeader("Authorization");
-			System.out.println("Token ==> " + token);
 			if (token == null) {
 				ctx.setResponseBody("{\"ok\": false,\"message\": \"Zuul Unauthorized - Required token\"}");
 	            ctx.getResponse().setContentType("application/json");
@@ -53,19 +51,17 @@ public class SecurityFilter extends ZuulFilter {
 			queryParams.put("token", token);
 			
 			class LoginWrapper extends WrapperResponse<LoginResponseDTO>{};
-			//WrapperResponse result = restTemplate.getForObject("http://security/token/validate?token={token}", WrapperResponse.class, queryParams);
-			WrapperResponse<LoginResponseDTO> result = restTemplate.exchange("http://security/token/validate?token={token}", HttpMethod.GET, null, new ParameterizedTypeReference<WrapperResponse<LoginResponseDTO>>() {}, queryParams).getBody();
+			WrapperResponse<LoginResponseDTO> result = 
+					restTemplate.exchange("http://security/token/validate?token={token}", 
+					HttpMethod.GET,	null, 
+					new ParameterizedTypeReference<WrapperResponse<LoginResponseDTO>>() {}, 
+					queryParams).getBody();
 			
 			if(!result.isOk()) {
 				ctx.setResponseBody("{\"ok\": false,\"message\": \""+result.getMessage()+"\"}");
 	            ctx.getResponse().setContentType("application/json");
 	            ctx.setResponseStatusCode(401);
-			}else {
-				System.out.println("Token validate => " + ReflectionToStringBuilder.toString(result, ToStringStyle.MULTI_LINE_STYLE));
-				System.out.println(result.getBody().getEmail());
-				
 			}
-			
 		}
 		return null;
 	}

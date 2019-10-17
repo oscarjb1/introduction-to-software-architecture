@@ -41,7 +41,6 @@ public class SecurityREST {
 	@RequestMapping(value = "loginForm", method = RequestMethod.POST,consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ModelAndView loginForm(@RequestParam Map<String, String> params) {
 		try {
-			System.out.println("loginForm ==> " );
 			return new ModelAndView("WEB-INF/vistas/sso?token=xxx");
 		} catch (Exception e) {
 			return new ModelAndView("sso?error=Invalid user or password");

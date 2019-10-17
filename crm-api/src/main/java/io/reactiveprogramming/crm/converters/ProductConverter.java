@@ -20,6 +20,7 @@ public class ProductConverter extends AbstractConverter<Product, ProductDTO> {
 		ProductDTO p = new ProductDTO();
 		p.setId(entity.getId());
 		p.setName(entity.getName());
+		p.setImage(entity.getImage());
 		p.setPrice(entity.getPrice());
 		return p;
 	}
