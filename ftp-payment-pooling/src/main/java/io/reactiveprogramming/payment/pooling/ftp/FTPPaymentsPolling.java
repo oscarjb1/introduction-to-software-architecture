@@ -1,11 +1,14 @@
 package io.reactiveprogramming.payment.pooling.ftp;
 
 import org.apache.commons.net.ftp.FTPFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import brave.Tracer;
 import io.reactiveprogramming.commons.rest.WrapperResponse;
 import io.reactiveprogramming.payment.pooling.feign.client.OrderServiceFeignClient;
 import io.reactiveprogramming.payment.pooling.feign.client.dto.ApplyPaymentRequest;
@@ -13,6 +16,11 @@ import io.reactiveprogramming.payment.pooling.feign.client.dto.ApplyPaymentReque
 
 @Component
 public class FTPPaymentsPolling {
+	
+	private static final Logger logger = LoggerFactory.getLogger(FTPPaymentsPolling.class);
+	
+	@Autowired
+	private Tracer tracer; 
 	
 	@Value("${ftp.enable}")
 	private String enable;
@@ -29,7 +37,7 @@ public class FTPPaymentsPolling {
 		if(!Boolean.valueOf(enable)) {
 			return;
 		}
-		System.out.println("pollingFile ==>");
+		logger.debug("pollingFile ==>");
 		try { 
 			ftpClient.connect();
 			FTPFile[] files = ftpClient.listFiles("/");
@@ -39,10 +47,12 @@ public class FTPPaymentsPolling {
 					
 					try {
 						String fileContent = ftpClient.readFileAndRemove("/", file);
-						System.out.println("file content ==> " + fileContent);
+						logger.info("New file ==> " + fileContent);
+						tracer.currentSpan().tag("file.new", file.getName());
 						
 						String[] fields = fileContent.split(",");
 						if(fields.length != 2) { 
+							tracer.currentSpan().tag("file.error", "Invalid file format");
 							throw new RuntimeException("Invalid file format");
 						}
 						
@@ -54,7 +64,8 @@ public class FTPPaymentsPolling {
 						payment.setRefNumber(refNumber);
 						
 						WrapperResponse response =  orderService.applyPayment(payment);
-						System.out.println(response.getMessage());
+						logger.info(response.getMessage());
+						tracer.currentSpan().tag("file.process", response.getMessage());
 						if(response.isOk()) {
 						}else {
 							

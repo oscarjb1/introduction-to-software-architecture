@@ -16,7 +16,14 @@ public class SaleOrderDTO {
 	private String registDate;
 	private String status;
 	private PaymentDTO payment;
+	private boolean queued;
 	
+	public boolean isQueued() {
+		return queued;
+	}
+	public void setQueued(boolean queued) {
+		this.queued = queued;
+	}
 	public PaymentDTO getPayment() {
 		return payment;
 	}

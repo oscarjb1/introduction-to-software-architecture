@@ -13,12 +13,10 @@ public class RabbitSender {
 
     public void send(Object message) {
         template.convertAndSend("emails", "*", message);
-        System.out.println(" [x] Sent ==>");
     } 
     
     public void send(String exchange, String routingKey, Object payload) {
         template.convertAndSend(exchange, routingKey, payload);
-        System.out.println(" [x] Sent ==>");
     } 
 
 }

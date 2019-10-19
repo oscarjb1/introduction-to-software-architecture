@@ -16,6 +16,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+
+import brave.Tracer;
 import io.reactiveprogramming.commons.dto.LoginResponseDTO;
 import io.reactiveprogramming.commons.email.EmailDTO;
 import io.reactiveprogramming.commons.exceptions.GenericServiceException;
@@ -43,6 +46,9 @@ import io.reactiveprogramming.crm.rabbit.RabbitSender;
 public class OrderService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
+	
+	@Autowired
+	private Tracer tracer;
 
 	@Autowired
 	private IOrderDAO orderDAO;
@@ -66,11 +72,42 @@ public class OrderService {
 			throw new GenericServiceException("Internal Server Error");
 		}
 	}
-
+	
+	private SaleOrderDTO queueOrder(NewOrderDTO order)throws ValidateServiceException, GenericServiceException{
+		tracer.currentSpan().tag("queue.order", "Queue order from the customer " + order.getCustomerName());
+		logger.error("Queue order from the customer " + order.getCustomerName());
+		try {
+			order.setRefNumber(UUID.randomUUID().toString());
+			sender.send("newOrders", null, order);
+			
+			SaleOrderDTO response = new SaleOrderDTO();
+			response.setQueued(true);
+			response.setRefNumber(order.getRefNumber());
+			
+			
+			EmailDTO mail = new EmailDTO();
+			mail.setFrom("no-reply@crm.com");
+			mail.setSubject("Hemos recibido tu pedido");
+			mail.setTo(order.getCustomerEmail());
+			mail.setMessage(String.format("Hola %s,<br> Hemos recibido tu pedido <strong>#%s</strong>, en este momento tu pedido está siendo procesado y una vez validado te contactaremos para darle segumiento a tu pedido",order.getCustomerName(), order.getRefNumber()));
+			
+			sender.send( "emails", null, mail); 
+			
+			return response;
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			tracer.currentSpan().tag("queue.order.error", "Error to queue a new order from the customer " + order.getCustomerName());
+			throw new GenericServiceException(e.getMessage(),e);
+		}
+	}
+	
+	@HystrixCommand(fallbackMethod="queueOrder")
 	public SaleOrderDTO createOrder(NewOrderDTO order)throws ValidateServiceException, GenericServiceException {
 		logger.info("New order request ==>");
 		try {
-			
+			if(order.getId() == null) {
+				throw new ValidateServiceException("Dummy error");
+			}
 			if(order.getOrderLines() == null || order.getOrderLines().isEmpty()) {
 				throw new ValidateServiceException("Need one or more order lines");
 			}
@@ -203,6 +240,7 @@ public class OrderService {
 	
 	public void applyPayment(ApplyPaymentRequest request)throws ValidateServiceException, GenericServiceException {
 		try {
+			tracer.currentSpan().tag("payment.new", request.getRefNumber());
 			SaleOrder saleOrder = orderDAO.findByRefNumber(request.getRefNumber());
 			if(saleOrder == null) {
 				throw new ValidateServiceException("Order by ref number not found");
@@ -221,6 +259,9 @@ public class OrderService {
 			saleOrder.setStatus(OrderStatus.PAYED);
 			orderDAO.save(saleOrder);
 			
+			logger.info("new payment applayed > " + request.getRefNumber());
+			tracer.currentSpan().tag("payment.process", "Payment applayed successfully");
+			
 			EmailDTO mail = new EmailDTO();
 			mail.setFrom("no-reply@crm.com");
 			mail.setSubject("Hemos recibido tu pedido");
@@ -230,9 +271,10 @@ public class OrderService {
 			sender.send(mail);
 			
 		} catch(ValidateServiceException e) {
+			tracer.currentSpan().tag("payment.validate", e.getMessage());
 			throw e;
 		} catch (Exception e) {
-			e.printStackTrace();
+			tracer.currentSpan().tag("payment.error", e.getMessage());
 			throw new GenericServiceException(e.getMessage(), e);
 		}
 		

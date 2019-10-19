@@ -15,8 +15,8 @@ spring:
     allow-bean-definition-overriding: true
   mail:
     host: smtp.gmail.com
-    username: user
-    password: password
+    username: oscarblancarte3@gmail.com
+    password: Admin1234@
     port: 587
     properties:
       mail:

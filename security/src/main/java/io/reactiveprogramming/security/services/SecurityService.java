@@ -1,8 +1,6 @@
 package io.reactiveprogramming.security.services;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 import javax.xml.bind.DatatypeConverter;
@@ -11,6 +9,7 @@ import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import brave.Tracer;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -37,6 +36,9 @@ public class SecurityService {
 	private static final String SUBJECT = "CRM-API";
 
 	@Autowired
+	private Tracer tracer;
+	
+	@Autowired
 	private IUserDAO userDAO;
 	
 	public LoginResponseDTO login(LoginDTO request)throws ValidateServiceException, GenericServiceException {
@@ -51,6 +53,7 @@ public class SecurityService {
 
 				Optional<User> userOpt = userDAO.findById(username);
 				if (!userOpt.isPresent()) {
+					
 					throw new ValidateServiceException("Invalid user or password");
 				}
 				
@@ -66,15 +69,19 @@ public class SecurityService {
 				response.setRol(user.getRol().name());
 				response.setEmail(user.getEmail());
 				response.setToken(token);
+				
+				logger.info(user.getUsername() + " authenticated");
+				tracer.currentSpan().tag("login", user.getUsername() + " authenticated");
 			}
-			
 			return response;
 
 		} catch(ValidateServiceException e) {
 			logger.info(e.getMessage());
+			tracer.currentSpan().tag("validate", e.getMessage());
 			throw e;
 		}catch (Exception e) {
 			logger.error(e.getMessage(), e);
+			tracer.currentSpan().tag("validate", "Error al autenticar al usuario" + e.getMessage());
 			throw new GenericServiceException("Error al autenticar al usuario");
 		}
 
@@ -143,10 +150,6 @@ public class SecurityService {
 		    Claims claims = Jwts.parser()         
 		       .setSigningKey(DatatypeConverter.parseBase64Binary(TOKEN))
 		       .parseClaimsJws(jwt).getBody();
-		    System.out.println("ID: " + claims.getId());
-		    System.out.println("Subject: " + claims.getSubject());
-		    System.out.println("Issuer: " + claims.getIssuer());
-		    System.out.println("Expiration: " + claims.getExpiration());
 		    return claims.getIssuer();
 		} catch (Exception e) {
 			throw new ValidateServiceException("Invalid Token");

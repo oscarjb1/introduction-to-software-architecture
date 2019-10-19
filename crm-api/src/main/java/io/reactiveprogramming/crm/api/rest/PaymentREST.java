@@ -21,7 +21,6 @@ public class PaymentREST {
 	@PostMapping
 	public WrapperResponse applyPayment(@RequestBody ApplyPaymentRequest request) {
 		try {
-			System.out.println("new payment applayed!");
 			orderService.applyPayment(request);
 			return new WrapperResponse<>(true, "Payment applay successfuly");
 		} catch(ValidateServiceException e) {

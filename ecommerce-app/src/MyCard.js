@@ -9,6 +9,7 @@ import Rodal from 'rodal';
 import 'rodal/lib/rodal.css';
 import { clearCard } from './reducers/actions'
 import {Choose, When, Otherwise} from 'react-control-statements'
+import {Link} from 'react-router-dom'
 
 class MyCard extends React.Component{
 
@@ -52,8 +53,8 @@ class MyCard extends React.Component{
         }})
 
         let request = {
-            customerName: this.props.user.username,
-            customerEmail: this.props.user.email,
+            //customerName: this.props.user.username,
+            //customerEmail: this.props.user.email,
             paymentMethod: this.state.paymentMethod,
             card: {
               name: this.state.name,
@@ -191,7 +192,15 @@ class MyCard extends React.Component{
                     </Choose>
                     <p>Pedido No: {this.state.order ? this.state.order.refNumber : ''}</p>
                     <div style={{textAlign: 'right'}}>
-                        <button onClick={() => this.goToOrder()} className="btn btn-success" style={{marginRight: '10px'}}>Ver mi compra</button>
+                        <Choose>
+                            <When condition={this.state.order && this.state.order.queued}>
+                                <Link to={"/"} className="btn btn-success" style={{marginRight: '10px'}}>Regresar</Link>
+                            </When>
+                            <Otherwise>
+                                <button onClick={() => this.goToOrder()} className="btn btn-success" style={{marginRight: '10px'}}>Ver mi compra</button>
+                            </Otherwise>
+                        </Choose>
+                        
                     </div>
                     
                 </Rodal>

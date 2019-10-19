@@ -29,12 +29,12 @@ public class SecurityREST {
 	private SecurityService securityService;
 
 	@PostMapping(path="login")
-	public WrapperResponse login(@RequestBody LoginDTO loginDTO) {
+	public ResponseEntity<WrapperResponse> login(@RequestBody LoginDTO loginDTO) {
 		try {
 			LoginResponseDTO response = this.securityService.login(loginDTO);
-			return new WrapperResponse(true, "", response);
+			return ResponseEntity.ok(new WrapperResponse(true, "", response));
 		} catch (Exception e) {
-			return new WrapperResponse(false, e.getMessage());
+			return ResponseEntity.ok(new WrapperResponse(false, e.getMessage()));
 		}
 	}
 	
@@ -48,7 +48,7 @@ public class SecurityREST {
 	}
 	
 	@GetMapping(path="token/validate")
-	public WrapperResponse tokenValidate(@RequestParam("token") String token) {
+	public WrapperResponse<LoginResponseDTO> tokenValidate(@RequestParam("token") String token) {
 		try {
 			LoginResponseDTO user = securityService.decriptToken(token);
 			return new WrapperResponse(true, "", user);
