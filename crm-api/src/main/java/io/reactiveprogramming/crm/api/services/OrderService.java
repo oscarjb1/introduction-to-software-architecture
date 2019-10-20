@@ -106,7 +106,7 @@ public class OrderService {
 		logger.info("New order request ==>");
 		try {
 			if(order.getId() == null) {
-				throw new ValidateServiceException("Dummy error");
+				//throw new ValidateServiceException("Dummy error");
 			}
 			if(order.getOrderLines() == null || order.getOrderLines().isEmpty()) {
 				throw new ValidateServiceException("Need one or more order lines");
