@@ -10,7 +10,14 @@ spring:
       probability: 1.0
       
 
-  
+  zipkin:
+    base-url: http://localhost:9411/
+    enabled: true
+    sender:
+      type: web
+    service:
+      name: ftp-payment-pooling
+      
 eureka:
   client:
     registerWithEureka: true

@@ -6,10 +6,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RabbitSender {
-
+	
     @Autowired
     private RabbitTemplate template;
-
 
     public void send(Object message) {
         template.convertAndSend("emails", "*", message);

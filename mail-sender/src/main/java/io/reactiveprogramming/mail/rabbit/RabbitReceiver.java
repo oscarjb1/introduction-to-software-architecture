@@ -4,10 +4,12 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import io.reactiveprogramming.commons.email.EmailDTO;
 import io.reactiveprogramming.mail.services.MailSenderService;
 
+@Service
 public class RabbitReceiver {
 	
 	@Autowired
@@ -18,5 +20,4 @@ public class RabbitReceiver {
 		System.out.println("newMessage => " + ReflectionToStringBuilder.toString(message, ToStringStyle.MULTI_LINE_STYLE));
 		mailService.sendSimpleMessage(message);
 	}
-
 }

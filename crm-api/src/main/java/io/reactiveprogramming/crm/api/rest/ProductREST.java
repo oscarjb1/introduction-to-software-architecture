@@ -31,7 +31,6 @@ public class ProductREST {
 	@GetMapping
 	public ResponseEntity<WrapperResponse> getAllProducts() {
 		try {
-			logger.info("getAllProducts => ");
 			List<ProductDTO> products = productService.getAllProducts();
 			WrapperResponse response = new WrapperResponse(true, "Consulta exitosa", products);
 			return new ResponseEntity<>(response, HttpStatus.OK);

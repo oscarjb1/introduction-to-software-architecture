@@ -49,7 +49,6 @@ public class OrderREST {
 			WrapperResponse<LoginResponseDTO> user = securityService.tokenValidate(token);
 			order.setCustomerName(user.getBody().getUsername());
 			order.setCustomerEmail(user.getBody().getEmail());
-			
 			SaleOrderDTO newOrder = orderService.createOrder(order);
 			return new WrapperResponse(true, "success", newOrder);
 		} catch(ValidateServiceException e) {

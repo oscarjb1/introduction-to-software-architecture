@@ -9,17 +9,13 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 import brave.Tracer;
-import io.reactiveprogramming.commons.dto.LoginResponseDTO;
 import io.reactiveprogramming.commons.email.EmailDTO;
 import io.reactiveprogramming.commons.exceptions.GenericServiceException;
 import io.reactiveprogramming.commons.exceptions.ValidateServiceException;
@@ -32,7 +28,6 @@ import io.reactiveprogramming.crm.dto.CardDTO;
 import io.reactiveprogramming.crm.dto.MessageDTO;
 import io.reactiveprogramming.crm.dto.NewOrderDTO;
 import io.reactiveprogramming.crm.dto.NewOrderLineDTO;
-import io.reactiveprogramming.crm.dto.OrderLineDTO;
 import io.reactiveprogramming.crm.dto.SaleOrderDTO;
 import io.reactiveprogramming.crm.entity.OrderLine;
 import io.reactiveprogramming.crm.entity.OrderStatus;
@@ -101,7 +96,7 @@ public class OrderService {
 		}
 	}
 	
-	@HystrixCommand(fallbackMethod="queueOrder")
+	@HystrixCommand(fallbackMethod="queueOrder", ignoreExceptions= {ValidateServiceException.class})
 	public SaleOrderDTO createOrder(NewOrderDTO order)throws ValidateServiceException, GenericServiceException {
 		logger.info("New order request ==>");
 		try {
@@ -180,6 +175,7 @@ public class OrderService {
 			SaleOrder newSaleOrder = orderDAO.save(saleOrder);
 			
 			logger.info("New order created ==>" + newSaleOrder.getId() + ", refNumber > " + newSaleOrder.getRefNumber());
+			tracer.currentSpan().tag("order.new", newSaleOrder.getRefNumber());
 			
 			SaleOrderConverter orderConverter = new SaleOrderConverter();
 			SaleOrderDTO returnOrder = orderConverter.toDTO(newSaleOrder);
@@ -205,13 +201,13 @@ public class OrderService {
 					WrapperResponse response = restTemplate.postForObject("http://webhook/push", message, WrapperResponse.class);
 				}
 			} catch (Exception e) {
+				logger.error(e.getMessage(),e);
+				tracer.currentSpan().tag("webhook.fail", e.getMessage());
 				System.out.println("No webhook service instance up!");
 			}
-			
-				
-			
 			return returnOrder;
 		} catch(ValidateServiceException e) {
+			e.printStackTrace();
 			throw e;
 		}catch (Exception e) {
 			e.printStackTrace();

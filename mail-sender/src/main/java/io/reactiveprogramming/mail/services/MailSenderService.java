@@ -1,28 +1,34 @@
 package io.reactiveprogramming.mail.services;
 
-import java.util.logging.Logger;
-
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import brave.Tracer;
 import io.reactiveprogramming.commons.email.EmailDTO;
 
-@Component
+@Service
 public class MailSenderService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(MailSenderService.class.getCanonicalName());
+	
 	@Autowired
     public JavaMailSender emailSender;
 	
-	private static final Logger logger = Logger.getLogger(MailSenderService.class.getCanonicalName());
+	@Autowired
+	private Tracer tracer;
+	
  
     public void sendSimpleMessage(EmailDTO message) {
-    	System.out.println("mailSender => " + ReflectionToStringBuilder.toString(message, ToStringStyle.MULTI_LINE_STYLE));
-    	
+    	logger.info("mailSender => " + ReflectionToStringBuilder.toString(message, ToStringStyle.MULTI_LINE_STYLE));
+    	tracer.currentSpan().tag("mail.new", ReflectionToStringBuilder.toString(message, ToStringStyle.MULTI_LINE_STYLE));
     	try {
         	MimeMessage messageHTML = emailSender.createMimeMessage();
         	message.setSubject(message.getSubject());
@@ -35,9 +41,8 @@ public class MailSenderService {
             
             emailSender.send(messageHTML);
 		} catch (Exception e) {
-			logger.severe(e.getMessage());
-			e.printStackTrace();
-			
+			logger.error(e.getMessage());
+			tracer.currentSpan().tag("mail.error", e.getMessage());
 		}
     }
 }
