@@ -6,7 +6,6 @@ import java.util.Map;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 
 import io.reactiveprogramming.commons.exceptions.GenericServiceException;

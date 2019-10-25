@@ -1,6 +1,5 @@
 package io.reactiveprogramming.webhook.dto;
 
-import io.reactiveprogramming.webhook.enums.EventType;
 
 public class ListenerDTO {
 	private Long id;
