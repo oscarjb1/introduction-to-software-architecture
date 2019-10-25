@@ -176,6 +176,7 @@ public class OrderService {
 			
 			logger.info("New order created ==>" + newSaleOrder.getId() + ", refNumber > " + newSaleOrder.getRefNumber());
 			tracer.currentSpan().tag("order.new", newSaleOrder.getRefNumber());
+			tracer.currentSpan().name(saleOrder.getRefNumber());
 			
 			SaleOrderConverter orderConverter = new SaleOrderConverter();
 			SaleOrderDTO returnOrder = orderConverter.toDTO(newSaleOrder);
