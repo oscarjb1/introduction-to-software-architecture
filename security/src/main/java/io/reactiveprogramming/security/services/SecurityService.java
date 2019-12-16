@@ -157,8 +157,4 @@ public class SecurityService {
 	    
 	}
 	
-	public static void main(String[] args){
-		String token = new SecurityService().createJWT("oscar");
-		System.out.println("Token => " + token);
-	}
 }

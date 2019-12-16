@@ -38,11 +38,12 @@ public class SecurityFilter extends ZuulFilter {
 				|| "/api/security/loginForm".equals(path)
 				|| path.startsWith("/api/crm/products/thumbnail")
 				) {
-			
+			//Handle all public resources
 		}else {
 			String token = request.getHeader("Authorization");
 			if (token == null) {
-				ctx.setResponseBody("{\"ok\": false,\"message\": \"Zuul Unauthorized - Required token\"}");
+				ctx.setResponseBody("{\"ok\": false,\"message\": "
+						+"\"Zuul Unauthorized - Required token\"}");
 	            ctx.getResponse().setContentType("application/json");
 	            ctx.setResponseStatusCode(401);
 			}
@@ -52,13 +53,16 @@ public class SecurityFilter extends ZuulFilter {
 			
 			class LoginWrapper extends WrapperResponse<LoginResponseDTO>{};
 			WrapperResponse<LoginResponseDTO> result = 
-					restTemplate.exchange("http://security/token/validate?token={token}", 
+					restTemplate.exchange(
+							"http://security/token/validate?token={token}", 
 					HttpMethod.GET,	null, 
-					new ParameterizedTypeReference<WrapperResponse<LoginResponseDTO>>() {}, 
+					new ParameterizedTypeReference
+						<WrapperResponse<LoginResponseDTO>>() {}, 
 					queryParams).getBody();
 			
 			if(!result.isOk()) {
-				ctx.setResponseBody("{\"ok\": false,\"message\": \""+result.getMessage()+"\"}");
+				ctx.setResponseBody("{\"ok\": false,\"message\": \""
+						+result.getMessage()+"\"}");
 	            ctx.getResponse().setContentType("application/json");
 	            ctx.setResponseStatusCode(401);
 			}
@@ -80,5 +84,4 @@ public class SecurityFilter extends ZuulFilter {
 	public String filterType() {
 		return "pre";
 	}
-
 }

@@ -13,7 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
 
 @Configuration
-public class NewOrderFallback {
+public class DefaultFallback {
 	@Bean
 	public FallbackProvider zuulFallbackProvider() {
 		return new FallbackProvider() {

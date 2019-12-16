@@ -1,6 +1,5 @@
 server:  
   port: 9091
-
 spring:
   application:
     name: webhook 
@@ -16,8 +15,8 @@ spring:
       name: webhook-notify
   datasource:
     url:      jdbc:mysql://${mysql.service.host}:${mysql.service.port}/${mysql.service.database}
-    username: root
-    password: 1234
+    username: ${mysql.service.username}
+    password: ${mysql.service.password}
     driver-class-name: com.mysql.jdbc.Driver
     initialization-mode: always
   jpa: 
@@ -35,6 +34,8 @@ mysql:
     port: 3306
     host:     localhost
     database: webhook
+    username: root
+    password: 1234
   
 eureka:
   client:

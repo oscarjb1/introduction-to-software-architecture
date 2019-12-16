@@ -1,7 +1,7 @@
 server:  
   port: 811
+  #port: ${PORT:0}  
 
-  
 spring:
   application:
     name: crm
@@ -15,15 +15,11 @@ spring:
       type: web
     service:
       name: crm
-    
   datasource:
     url:      jdbc:mysql://${mysql.service.host}:${mysql.service.port}/${mysql.service.database}
-    username: root
-    password: 1234
+    username: ${mysql.service.username}
+    password: ${mysql.service.password}
     driver-class-name: com.mysql.jdbc.Driver
-    #initialization-mode: always
-  
-                       
   jpa:
     hibernate:
       ddl-auto: update
@@ -39,23 +35,23 @@ spring:
     username: nccsiuvr
     password: FEfDUd1TNNbe3rDWDaUgF5TgqVJM62iH
     virtual-host: nccsiuvr
-
-
+mysql:
+  service:
+    port: 3306
+    host: localhost
+    database: crm
+    username: root
+    password: 1234
 eureka:
   client:
     registerWithEureka: true
     fetchRegistry: true
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
-      
-mysql:
-  service:
-    port: 3306
-    host: localhost
-    database: crm
+  #instance:
+    #sinstance-id: ${spring.application.name}:${server.port}-${spring.application.instance_id:${random.value}}      
 
-    
-    
+
 logging:
   level:
     root: info

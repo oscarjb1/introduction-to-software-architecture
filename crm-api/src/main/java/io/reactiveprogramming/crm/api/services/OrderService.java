@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
 import brave.Tracer;
 import io.reactiveprogramming.commons.email.EmailDTO;
@@ -79,7 +81,6 @@ public class OrderService {
 			response.setQueued(true);
 			response.setRefNumber(order.getRefNumber());
 			
-			
 			EmailDTO mail = new EmailDTO();
 			mail.setFrom("no-reply@crm.com");
 			mail.setSubject("Hemos recibido tu pedido");
@@ -96,12 +97,22 @@ public class OrderService {
 		}
 	}
 	
-	@HystrixCommand(fallbackMethod="queueOrder", ignoreExceptions= {ValidateServiceException.class})
-	public SaleOrderDTO createOrder(NewOrderDTO order)throws ValidateServiceException, GenericServiceException {
+	@HystrixCommand(
+			fallbackMethod="queueOrder", 
+			ignoreExceptions= {ValidateServiceException.class}, 
+			commandProperties = {
+					//@HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "1"),
+		            ///@HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "50"),
+		            //@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "60000"),
+					//@HystrixProperty(name = "circuitBreaker.forceOpen", value = "true")
+			}
+    )
+	public SaleOrderDTO createOrder(NewOrderDTO order) throws ValidateServiceException, 
+	GenericServiceException {
 		logger.info("New order request ==>");
 		try {
 			if(order.getId() == null) {
-				//throw new ValidateServiceException("Dummy error");
+				throw new GenericServiceException("Dummy error");
 			}
 			if(order.getOrderLines() == null || order.getOrderLines().isEmpty()) {
 				throw new ValidateServiceException("Need one or more order lines");
@@ -113,8 +124,6 @@ public class OrderService {
 			} catch (Exception e) {
 				throw new ValidateServiceException("Invalid payment menthod");
 			}
-			
-			
 			
 			SaleOrder saleOrder = new SaleOrder();
 			
@@ -130,17 +139,24 @@ public class OrderService {
 				String number = card.getNumber();
 				String expiry = card.getExpiry();
 				
-				if(cvc == null || cvc.isEmpty() || cvc.length() < 3 || cvc.length() > 4) {
-					throw new ValidateServiceException("CVC is required, is need 3 or 4 numbers");
+				if(cvc == null || cvc.isEmpty() 
+						|| cvc.length() < 3 || cvc.length() > 4) {
+					throw new ValidateServiceException(
+							"CVC is required, is need 3 or 4 numbers");
 				}
-				if(expiry == null || expiry.isEmpty() || expiry.length() < 4 || expiry.length() > 4) {
-					throw new ValidateServiceException("Expiry date id required, formato mm/yy");
+				if(expiry == null || expiry.isEmpty() 
+						|| expiry.length() < 4 || expiry.length() > 4) {
+					throw new ValidateServiceException(
+							"Expiry date id required, formato mm/yy");
 				}
 				if(name == null || name.isEmpty() || name.length() > 30) {
-					throw new ValidateServiceException("Named is requiered, 30 characters max");
+					throw new ValidateServiceException(
+							"Named is requiered, 30 characters max");
 				}
-				if(number == null || number.isEmpty() || number.length() < 15 || number.length() > 16) {
-					throw new ValidateServiceException("Invalid credit card number, is need 15 or 16 numbers");
+				if(number == null || number.isEmpty() 
+						|| number.length() < 15 || number.length() > 16) {
+					throw new ValidateServiceException(
+							"Invalid credit card number, is need 15 or 16 numbers");
 				}
 				
 				payment.setPaydate(Calendar.getInstance());
@@ -156,9 +172,11 @@ public class OrderService {
 			
 			Set<OrderLine> lines = new HashSet<>();
 			for(NewOrderLineDTO lineDTO : order.getOrderLines()) {
-				Optional<Product> productOpt = productDAO.findById(lineDTO.getProductId());
+				Optional<Product> productOpt = 
+						productDAO.findById(lineDTO.getProductId());
 				if(!productOpt.isPresent()) {
-					throw new ValidateServiceException(String.format("Product %s not found", lineDTO.getProductId()));
+					throw new ValidateServiceException(
+							String.format("Product %s not found", lineDTO.getProductId()));
 				}
 				Product product = productOpt.get();
 				
@@ -174,7 +192,8 @@ public class OrderService {
 			
 			SaleOrder newSaleOrder = orderDAO.save(saleOrder);
 			
-			logger.info("New order created ==>" + newSaleOrder.getId() + ", refNumber > " + newSaleOrder.getRefNumber());
+			logger.info("New order created ==>" + newSaleOrder.getId() + 
+					", refNumber > " + newSaleOrder.getRefNumber());
 			tracer.currentSpan().tag("order.new", newSaleOrder.getRefNumber());
 			tracer.currentSpan().name(saleOrder.getRefNumber());
 			
@@ -199,7 +218,8 @@ public class OrderService {
 					MessageDTO message = new MessageDTO();
 					message.setEventType(MessageDTO.EventType.NEW_SALES);
 					message.setMessage(returnOrder); 
-					WrapperResponse response = restTemplate.postForObject("http://webhook/push", message, WrapperResponse.class);
+					WrapperResponse response = restTemplate.postForObject(
+							"http://webhook/push", message, WrapperResponse.class);
 				}
 			} catch (Exception e) {
 				logger.error(e.getMessage(),e);
@@ -216,7 +236,8 @@ public class OrderService {
 		}
 	}
 	
-	public SaleOrderDTO findSaleOrderById(Long orderId)throws ValidateServiceException, GenericServiceException{
+	public SaleOrderDTO findSaleOrderById(Long orderId)throws ValidateServiceException, 
+	GenericServiceException{
 		try {
 			Optional<SaleOrder> orderOpt = orderDAO.findById(orderId);
 			if(!orderOpt.isPresent()) {
@@ -235,7 +256,8 @@ public class OrderService {
 		}
 	}
 	
-	public void applyPayment(ApplyPaymentRequest request)throws ValidateServiceException, GenericServiceException {
+	public void applyPayment(ApplyPaymentRequest request)throws ValidateServiceException, 
+	GenericServiceException {
 		try {
 			tracer.currentSpan().tag("payment.new", request.getRefNumber());
 			SaleOrder saleOrder = orderDAO.findByRefNumber(request.getRefNumber());
@@ -244,7 +266,8 @@ public class OrderService {
 			}
 			
 			if(request.getAmmount() < saleOrder.getTotal() ) {
-				throw new ValidateServiceException("Payment amount not correspond to the total of the order");
+				throw new ValidateServiceException(
+						"Payment amount not correspond to the total of the order");
 			}
 			
 			

@@ -30,6 +30,20 @@ public class OrderREST {
 	@Autowired
 	private SecurityServiceFeignClient securityService;
 	
+	@RequestMapping(value = "{orderId}", method = RequestMethod.GET)
+	public WrapperResponse<SaleOrderDTO> getOrder(@PathVariable("orderId") Long orderId) {
+		try {
+			SaleOrderDTO newOrder = orderService.findSaleOrderById(orderId);
+			WrapperResponse response = new WrapperResponse(true, "success", newOrder);
+			return response;
+		} catch(ValidateServiceException e) {
+			return new WrapperResponse(false, e.getMessage());
+		}catch (Exception e) {
+			e.printStackTrace();
+			return new WrapperResponse(false, "Internal Server Error");
+		}
+	}
+	
 	@GetMapping()
 	public WrapperResponse getAllOrders() {
 		try {
@@ -59,17 +73,5 @@ public class OrderREST {
 		}
 	}
 	
-	@RequestMapping(value = "{orderId}", method = RequestMethod.GET)
-	public WrapperResponse getOrder(@PathVariable("orderId") Long orderId) {
-		try {
-			SaleOrderDTO newOrder = orderService.findSaleOrderById(orderId);
-			WrapperResponse response = new WrapperResponse(true, "success", newOrder);
-			return response;
-		} catch(ValidateServiceException e) {
-			return new WrapperResponse(false, e.getMessage());
-		}catch (Exception e) {
-			e.printStackTrace();
-			return new WrapperResponse(false, "Internal Server Error");
-		}
-	}
+	
 }

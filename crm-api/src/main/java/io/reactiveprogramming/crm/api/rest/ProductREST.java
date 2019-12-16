@@ -29,7 +29,7 @@ public class ProductREST {
 	private ProductService productService;
 	
 	@GetMapping
-	public ResponseEntity<WrapperResponse> getAllProducts() {
+	public ResponseEntity<WrapperResponse<ProductDTO>> getAllProducts() {
 		try {
 			List<ProductDTO> products = productService.getAllProducts();
 			WrapperResponse response = new WrapperResponse(true, "Consulta exitosa", products);

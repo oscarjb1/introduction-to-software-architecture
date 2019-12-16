@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8080 
 #  servlet:
 #    contextPath: /api
 
@@ -27,6 +27,8 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
       
 zuul:
+  debug:
+    request: true
   ignoredServices: '*'
   prefix: /api
   routes:

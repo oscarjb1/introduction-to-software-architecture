@@ -1,18 +1,12 @@
 package io.reactiveprogramming.security.controllers;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class LoginController {
-
-
+public class WebController {
 	@RequestMapping("/sso")
-	public String welcome(Map<String, Object> model) {
-		model.put("message", "hola mundo");
+	public String mensaje() {
 		return "sso";
 	}
-
 }

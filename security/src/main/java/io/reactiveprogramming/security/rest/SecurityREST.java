@@ -2,8 +2,6 @@ package io.reactiveprogramming.security.rest;
 
 import java.util.Map;
 
-import javax.ws.rs.HeaderParam;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +25,9 @@ public class SecurityREST {
 	
 	@Autowired
 	private SecurityService securityService;
-
+	
 	@PostMapping(path="login")
-	public ResponseEntity<WrapperResponse> login(@RequestBody LoginDTO loginDTO) {
+	public ResponseEntity<WrapperResponse<LoginResponseDTO>> login(@RequestBody LoginDTO loginDTO) {
 		try {
 			LoginResponseDTO response = this.securityService.login(loginDTO);
 			return ResponseEntity.ok(new WrapperResponse(true, "", response));

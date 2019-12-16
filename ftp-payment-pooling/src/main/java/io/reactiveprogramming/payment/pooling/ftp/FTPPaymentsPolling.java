@@ -43,35 +43,33 @@ public class FTPPaymentsPolling {
 			FTPFile[] files = ftpClient.listFiles("/");
 			
 			for(FTPFile file : files) {
-				if(file.getType() == FTPFile.FILE_TYPE) {
+				if(file.getType() != FTPFile.FILE_TYPE) continue;
+				
+				String fileContent = ftpClient.readFileAndRemove("/", file);
+				logger.info("New file ==> " + fileContent);
+				tracer.currentSpan().tag("file.new", file.getName());
+				
+				String[] lines = fileContent.split("\n");
+				for(String line : lines) {
+					String[] linesField = line.split(",");
+					if(linesField.length != 2) { 
+						tracer.currentSpan().tag("file.error", "Invalid file format");
+						throw new RuntimeException("Invalid file format");
+					}
+					String refNumber = linesField[0];
+					float ammount = Float.parseFloat(linesField[1]);
 					
-					try {
-						String fileContent = ftpClient.readFileAndRemove("/", file);
-						logger.info("New file ==> " + fileContent);
-						tracer.currentSpan().tag("file.new", file.getName());
-						
-						String[] fields = fileContent.split(",");
-						if(fields.length != 2) { 
-							tracer.currentSpan().tag("file.error", "Invalid file format");
-							throw new RuntimeException("Invalid file format");
-						}
-						
-						String refNumber = fields[0];
-						float ammount = Float.parseFloat(fields[1]);
-						
-						ApplyPaymentRequest payment = new ApplyPaymentRequest();
-						payment.setAmmount(ammount);
-						payment.setRefNumber(refNumber);
-						
-						WrapperResponse response =  orderService.applyPayment(payment);
-						logger.info(response.getMessage());
-						tracer.currentSpan().tag("file.process", response.getMessage());
-						if(response.isOk()) {
-						}else {
-							
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
+					ApplyPaymentRequest payment = new ApplyPaymentRequest();
+					payment.setAmmount(ammount);
+					payment.setRefNumber(refNumber);
+					
+					WrapperResponse response =  orderService.applyPayment(payment);
+					logger.info(response.getMessage());
+					tracer.currentSpan().tag("file.process", response.getMessage());
+					if(response.isOk()) {
+						logger.info("Payment successfully applied");
+					}else {
+						logger.error("Error " + response.getMessage());
 					}
 				}
 			}
