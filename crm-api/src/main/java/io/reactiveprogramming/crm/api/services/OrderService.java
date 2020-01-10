@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
 import brave.Tracer;
 import io.reactiveprogramming.commons.email.EmailDTO;
@@ -99,21 +97,15 @@ public class OrderService {
 	
 	@HystrixCommand(
 			fallbackMethod="queueOrder", 
-			ignoreExceptions= {ValidateServiceException.class}, 
-			commandProperties = {
-					//@HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "1"),
-		            ///@HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "50"),
-		            //@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "60000"),
-					//@HystrixProperty(name = "circuitBreaker.forceOpen", value = "true")
-			}
-    )
-	public SaleOrderDTO createOrder(NewOrderDTO order) throws ValidateServiceException, 
-	GenericServiceException {
+			ignoreExceptions= {ValidateServiceException.class})
+	public SaleOrderDTO createOrder(NewOrderDTO order) 
+			throws ValidateServiceException, GenericServiceException {
 		logger.info("New order request ==>");
 		try {
-			if(order.getId() == null) {
-				throw new GenericServiceException("Dummy error");
-			}
+			
+			//if(order.getId() == null) {
+			//	throw new GenericServiceException("Dummy error");
+			//}
 			if(order.getOrderLines() == null || order.getOrderLines().isEmpty()) {
 				throw new ValidateServiceException("Need one or more order lines");
 			}

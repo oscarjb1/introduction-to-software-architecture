@@ -42,6 +42,7 @@ public class SecurityService {
 	private IUserDAO userDAO;
 	
 	public LoginResponseDTO login(LoginDTO request)throws ValidateServiceException, GenericServiceException {
+		logger.info("Login " + request.getUsername());
 		try {
 			LoginResponseDTO response = null;
 			if(request.getToken() != null) {
@@ -88,7 +89,7 @@ public class SecurityService {
 	}
 	
 	public LoginResponseDTO decriptToken(String token) throws ValidateServiceException, GenericServiceException{
-
+		logger.info("Token decript ==> ");
         if (token == null || !token.startsWith("Bearer ")) {
         	throw new ValidateServiceException("Token inválido");
         }

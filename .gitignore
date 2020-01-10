@@ -1,4 +1,3 @@
 /.metadata/
 /.recommenders/
 commons/target/*
-zipkin-server-2.18.0-exec.jar
