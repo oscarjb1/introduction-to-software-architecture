@@ -1,9 +1,9 @@
 package io.reactiveprogramming.webhook.services;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -41,7 +41,7 @@ public class EventListenerService {
 			for(Listener listener : listeners) {
 				try {
 					RestTemplate templete = new RestTemplate();
-					Map map = new HashedMap();
+					Map map = new HashMap<>();
 					System.out.println("Send notify to ==> " + listener.getEndpoint());
 					System.out.println("With body ==> " + message.getMessage());
 					templete.postForObject(listener.getEndpoint(), message.getMessage(), Void.class, map);

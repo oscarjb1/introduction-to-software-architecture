@@ -1,7 +1,5 @@
 package io.reactiveprogramming.webhook.config;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
