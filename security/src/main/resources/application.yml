@@ -18,7 +18,7 @@ spring:
       prefix: /WEB-INF/vistas/
       suffix: .jsp
   datasource:
-    url:      jdbc:mysql://${mysql.service.host}:${mysql.service.port}/${mysql.service.database}
+    url:      jdbc:mysql://${mysql.service.host}:${mysql.service.port}/${mysql.service.database}?useSSL=false
     username: ${mysql.service.username}
     password: ${mysql.service.password}
     driver-class-name: com.mysql.jdbc.Driver

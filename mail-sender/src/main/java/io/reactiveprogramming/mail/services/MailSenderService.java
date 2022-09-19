@@ -41,6 +41,7 @@ public class MailSenderService {
             
             emailSender.send(messageHTML);
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(e.getMessage());
 			tracer.currentSpan().tag("mail.error", e.getMessage());
 		}

@@ -19,6 +19,8 @@
 		<java.version>11</java.version>
 		<spring-cloud.version>Greenwich.RC2</spring-cloud.version>
 	</properties>
+	
+	<packaging>war</packaging>
 
 	<dependencies>
 		<dependency>

@@ -1,5 +1,5 @@
 server:
-  port: 8080 
+  port: 8080
 #  servlet:
 #    contextPath: /api
 
@@ -25,19 +25,19 @@ eureka:
     fetchRegistry: true
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
-      
+
 zuul:
   debug:
     request: true
-  ignoredServices: '*'
+  ignoredServices: "*"
   prefix: /api
   routes:
     crm:
-       path: /crm/**
-       serviceId: crm
+      path: /crm/**
+      serviceId: crm
     security:
-       path: /security/**
-       serviceId: security
+      path: /security/**
+      serviceId: security
     webhook:
       path: /webhook/**
       serviceId: webhook

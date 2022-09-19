@@ -7,7 +7,7 @@ CREATE TABLE `users` (
   `rol` varchar(255) NOT NULL,
   PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-INSERT INTO `users` VALUES ('oscar','oscar_jb1@hotmail.com','1234','ADMIN');
+INSERT INTO `users` VALUES ('admin','admin@dummy.com','1234','ADMIN');
 
 
 CREATE DATABASE webhook;

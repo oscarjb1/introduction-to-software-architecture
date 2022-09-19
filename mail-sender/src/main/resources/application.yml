@@ -21,27 +21,26 @@ spring:
     allow-bean-definition-overriding: true
   mail:
     host: smtp.gmail.com
-    username: email@email.com
-    password: passsword
-    port: 587
+    port: 25
+    username: user@gmail.com
+    password: password
     properties:
       mail:
         smtp:
           auth: true
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
           starttls:
             enable: true
           ssl: 
             trust: smtp.gmail.com
+            enable: false
+          socketFactory:
+            fallback: true
   rabbitmq:
-    host: barnacle.rmq.cloudamqp.com
+    host: xxx.rmq.cloudamqp.com
     port: 5672
-    username: nccsiuvr
-    password: FEfDUd1TNNbe3rDWDaUgF5TgqVJM62iH
-    virtual-host: nccsiuvr
-    
+    username: username
+    password: password
+    virtual-host: username
 eureka:
   client:
     registerWithEureka: true

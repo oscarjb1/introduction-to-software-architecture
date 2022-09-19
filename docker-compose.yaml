@@ -1,0 +1,231 @@
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    command: --authentication_policy=mysql_native_password
+    env_file:
+      - .env
+    ports:
+      - ${MYSQL_PORT}:3306
+    networks:
+      - api-net
+    volumes:
+      - mysql:/var/lib/mysql:rw
+  zipkin:
+    image: openzipkin/zipkin-slim
+    container_name: zipkin
+    ports:
+      - 9411:9411
+    networks:
+      - api-net
+  ecommerce-app:
+    image: ecommerce-app
+    container_name: ecommerce-app
+    ports:
+      - 3000:3000
+    networks:
+      - api-net
+    depends_on:
+      - crm-api
+      - api-gateway
+  service-registry:
+    image: service-registry
+    environment:
+      SPRING_APPLICATION_JSON: '{
+            "eureka.instance.hostname":"service-registry"
+          }'
+    networks:
+      - api-net
+    ports:
+      - 8761:8761
+  api-gateway:
+    image: api-gateway
+    env_file:
+      - .env
+    environment:
+      SPRING_APPLICATION_JSON: '{
+          "eureka.client.serviceUrl.defaultZone":"${EUREKA_HOST}",
+          "spring.zipkin.base-url":"${ZIPKIN_HOST}"
+          }'
+    networks:
+      - api-net
+    ports:
+      - 8080:8080
+    depends_on:
+      - service-registry
+  security:
+    image: security
+    env_file:
+      - .env
+    environment:
+      SPRING_APPLICATION_JSON: '{
+          "eureka.client.serviceUrl.defaultZone":"${EUREKA_HOST}",
+          "spring.zipkin.base-url":"${ZIPKIN_HOST}",
+          "mysql.service.host":"${MYSQL_HOST}",
+          "mysql.service.port":"${MYSQL_PORT}",
+          "mysql.service.database":"security",
+          "mysql.service.username":"root",
+          "mysql.service.password":"${MYSQL_ROOT_PASSWORD}"
+          }'
+    networks:
+      - api-net
+    ports:
+      - 9090:9090
+    depends_on:
+      - service-registry
+      - mysql
+      - zipkin
+  rabbitmq:
+    image: rabbitmq:3.10.6-management
+    container_name: rabbitmq
+    networks:
+      - api-net
+    ports:
+      - ${RABBITMQ_PORT}:5672
+      - 15692:15692
+      - 15672:15672
+  crm-api:
+    image: crm-api
+    env_file:
+      - .env
+    environment:
+      SPRING_APPLICATION_JSON: '{
+          "eureka.client.serviceUrl.defaultZone":"${EUREKA_HOST}",
+          "spring.zipkin.base-url":"${ZIPKIN_HOST}",
+          "mysql.service.host":"${MYSQL_HOST}",
+          "mysql.service.port":"${MYSQL_PORT}",
+          "mysql.service.database":"crm",
+          "mysql.service.username":"root",
+          "mysql.service.password":"${MYSQL_PASSWORD}",
+          "server.port":"8083",
+          "spring.rabbitmq.host": "${RABBITMQ_HOST}",
+          "spring.rabbitmq.port": "${RABBITMQ_PORT}",
+          "spring.rabbitmq.username": "${RABBITMQ_USERNAME}",
+          "spring.rabbitmq.password": "${RABBITMQ_PASSWORD}",
+          "spring.rabbitmq.virtual-host": "${RABBITMQ_VIRTUALHOST}"
+          }'
+    networks:
+      - api-net
+    ports:
+      - 8083:8083
+    depends_on:
+      - service-registry
+      - rabbitmq
+      - mysql
+      - zipkin
+  mail-sender:
+    image: mail-sender
+    env_file:
+    - .env
+    environment:
+      SPRING_APPLICATION_JSON: '{
+          "eureka.client.serviceUrl.defaultZone":"${EUREKA_HOST}",
+          "spring.zipkin.base-url":"${ZIPKIN_HOST}",
+          "spring.rabbitmq.host": "${RABBITMQ_HOST}",
+          "spring.rabbitmq.port": "${RABBITMQ_PORT}",
+          "spring.rabbitmq.username": "${RABBITMQ_USERNAME}",
+          "spring.rabbitmq.password": "${RABBITMQ_PASSWORD}",
+          "spring.rabbitmq.virtual-host": "${RABBITMQ_VIRTUALHOST}",
+          "spring.mail.host":"${EMAIL_HOST}",
+          "spring.mail.port":"${EMAIL_PORT}",
+          "spring.mail.username":"${EMAIL_USER}",
+          "spring.mail.password":"${EMAIL_PASSWORD}",
+          "spring.mail.properties.mail.smtp.ssl.trust":"${EMAIL_HOST}"
+          }'
+    networks:
+      - api-net
+    ports:
+      - 8081:8081
+    depends_on:
+      - service-registry
+      - rabbitmq
+      - zipkin
+  webhook-notif:
+    image: webhook-notif
+    env_file:
+      - .env
+    environment:
+      SPRING_APPLICATION_JSON: '{
+          "eureka.client.serviceUrl.defaultZone":"${EUREKA_HOST}",
+          "spring.zipkin.base-url":"${ZIPKIN_HOST}",
+          "mysql.service.host":"${MYSQL_HOST}",
+          "mysql.service.port":"${MYSQL_PORT}",
+          "mysql.service.database":"webhook",
+          "mysql.service.username":"root",
+          "mysql.service.password":"${MYSQL_ROOT_PASSWORD}"
+          }'
+    networks:
+      - api-net
+    ports:
+      - 9091:9091
+    depends_on:
+      - service-registry
+      - zipkin
+      - mysql
+  3pary-app:
+    image: 3pary-app
+    env_file:
+      - .env
+    environment:
+      SPRING_APPLICATION_JSON: '{
+          "spring.zipkin.base-url":"${ZIPKIN_HOST}"
+          }'
+    networks:
+      - api-net
+    ports:
+      - 9092:9092
+    depends_on:
+      - zipkin
+  ftp-payment-pooling:
+    image: ftp-payment-pooling
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - .env
+    environment:
+      SPRING_APPLICATION_JSON: '{
+          "eureka.client.serviceUrl.defaultZone":"${EUREKA_HOST}",
+          "spring.zipkin.base-url":"${ZIPKIN_HOST}",
+          "ftp.enable":"${FTP_ENABLE}",
+          "ftp.host":"${FTP_HOST}",
+          "ftp.port":"${FTP_PORT}",
+          "ftp.user":"${FTP_USERNAME}",
+          "ftp.password":"${FTP_PASSWORD}"
+          }'
+    networks:
+      - api-net
+    ports:
+      - 8082:8082
+    depends_on:
+      - service-registry
+      - crm-api
+      - zipkin
+  ftp-server:
+    image: fauria/vsftpd
+    container_name: ftp-server
+    env_file:
+      - .env
+    environment:
+      - FTP_USER=${FTP_USERNAME}
+      - FTP_PASS=${FTP_PASSWORD}
+      - PASV_ADDRESS=${FTP_HOST}
+      - FILE_OPEN_MODE=0777
+      - PASV_MIN_PORT=21100
+      - PASV_MAX_PORT=21110
+    volumes:
+      - type: bind
+        source: ./ftp-server/ftp
+        target: /home/vsftpd
+      - type: bind
+        source: ./ftp-server/log
+        target: /var/log/vsftpd
+    networks:
+      - api-net
+    ports:
+      - 21:21
+      - 20:20
+      - 21100-21110:21100-21110
+networks:
+  api-net:
+volumes:
+  mysql:

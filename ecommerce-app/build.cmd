@@ -1,0 +1,1 @@
+CALL docker build -t ecommerce-app .

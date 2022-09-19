@@ -18,6 +18,8 @@
 	<properties> 
 		<java.version>11</java.version>
 		<spring-cloud.version>Greenwich.RC2</spring-cloud.version>
+		<maven.compiler.source>1.11</maven.compiler.source>
+    	<maven.compiler.target>1.11</maven.compiler.target>
 	</properties>
 
 	<dependencies>

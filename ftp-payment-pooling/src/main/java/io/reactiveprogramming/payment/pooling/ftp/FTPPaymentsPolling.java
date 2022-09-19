@@ -1,5 +1,10 @@
 package io.reactiveprogramming.payment.pooling.ftp;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
+import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,10 +31,10 @@ public class FTPPaymentsPolling {
 	private String enable;
 	
 	@Autowired
-	private SimpleFtpClient ftpClient;
+	private OrderServiceFeignClient orderService;
 	
 	@Autowired
-	private OrderServiceFeignClient orderService;
+	private FTPClient ftpClient;
 	
 	
 	@Scheduled(fixedRate = 10000) 
@@ -37,15 +42,18 @@ public class FTPPaymentsPolling {
 		if(!Boolean.valueOf(enable)) {
 			return;
 		}
-		logger.debug("pollingFile ==>");
+		logger.info("pollingFile ==>");
 		try { 
-			ftpClient.connect();
-			FTPFile[] files = ftpClient.listFiles("/");
-			
+			FTPFile[] files = ftpClient.listFiles();
+
+			logger.info("File count: " + files.length);
+
 			for(FTPFile file : files) {
+				logger.info("name: " + file.getName());
+				logger.info("type: " + file.getType());
 				if(file.getType() != FTPFile.FILE_TYPE) continue;
 				
-				String fileContent = ftpClient.readFileAndRemove("/", file);
+				String fileContent = this.readFileAndRemove("/", file);
 				logger.info("New file ==> " + fileContent);
 				tracer.currentSpan().tag("file.new", file.getName());
 				
@@ -73,10 +81,32 @@ public class FTPPaymentsPolling {
 					}
 				}
 			}
-			ftpClient.disconect();
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println(e.getMessage());
 		}
     }
+	
+	public String readFileAndRemove(String path, FTPFile file) throws Exception{
+		try {
+			ftpClient.changeWorkingDirectory(path);
+			
+			File tempFile = File.createTempFile("payments-", ".temp");
+			FileOutputStream output = new FileOutputStream(tempFile);
+			ftpClient.retrieveFile(file.getName(), output);
+			output.close();
+			
+			FileInputStream stream = new FileInputStream(tempFile);
+			byte[] bytes = new byte[stream.available()];
+			stream.read(bytes);
+			stream.close();
+			
+			boolean del = ftpClient.deleteFile(file.getName());
+			System.out.println("del => " + del);
+			
+			return new String(bytes);
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage(),e);
+		}
+	}
 }

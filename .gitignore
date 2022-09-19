@@ -1,3 +1,4 @@
 /.metadata/
 /.recommenders/
 commons/target/*
+ftp-server/log/vsftpd.log

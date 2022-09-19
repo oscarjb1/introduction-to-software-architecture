@@ -29,6 +29,7 @@ eureka:
 ftp:
   enable: true
   host: localhost
+  passiveLocalIPAddress: localhost
   port: 21
   user: payments
   password: 1234
