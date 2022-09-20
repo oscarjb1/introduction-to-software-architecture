@@ -30,6 +30,7 @@ services:
       - api-gateway
   service-registry:
     image: service-registry
+    container_name: service-registry
     environment:
       SPRING_APPLICATION_JSON: '{
             "eureka.instance.hostname":"service-registry"
@@ -40,6 +41,7 @@ services:
       - 8761:8761
   api-gateway:
     image: api-gateway
+    container_name: api-gateway
     env_file:
       - .env
     environment:
@@ -55,6 +57,7 @@ services:
       - service-registry
   security:
     image: security
+    container_name: security
     env_file:
       - .env
     environment:
@@ -86,6 +89,7 @@ services:
       - 15672:15672
   crm-api:
     image: crm-api
+    container_name: crm-api
     env_file:
       - .env
     environment:
@@ -115,6 +119,7 @@ services:
       - zipkin
   mail-sender:
     image: mail-sender
+    container_name: mail-sender
     env_file:
     - .env
     environment:
@@ -142,6 +147,7 @@ services:
       - zipkin
   webhook-notif:
     image: webhook-notif
+    container_name: webhook-notif
     env_file:
       - .env
     environment:
@@ -164,6 +170,7 @@ services:
       - mysql
   3pary-app:
     image: 3pary-app
+    container_name: 3pary-app
     env_file:
       - .env
     environment:
@@ -178,6 +185,7 @@ services:
       - zipkin
   ftp-payment-pooling:
     image: ftp-payment-pooling
+    container_name: ftp-payment-pooling
     extra_hosts:
       - "host.docker.internal:host-gateway"
     env_file:
